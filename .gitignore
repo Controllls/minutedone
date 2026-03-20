@@ -1,0 +1,32 @@
+# 환경변수 & 인증 (절대 커밋 금지)
+config/.env
+config/gdrive_token.json
+config/gdrive_state.tmp
+config/service_account.json
+config/calendar.env
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# 출력 파일
+output/
+uploads/ppt/
+
+# 에디터
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+notebooks/.ipynb_checkpoints/

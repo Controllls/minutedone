@@ -1,0 +1,35 @@
+﻿# 팀 라이브러리 에이전트 v2 - 패키지 목록
+# pip install -r requirements.txt
+
+# ── LLM API ──────────────────────────────
+anthropic>=0.40.0
+openai>=1.50.0
+google-generativeai>=0.8.0
+
+# ── 로컬 LLM (Ollama) ────────────────────
+# LLM_PROVIDER=local 사용 시 필요
+# Ollama 서버는 별도 설치: https://ollama.com/download
+ollama>=0.3.0
+
+# ── Google 연동 ──────────────────────────
+google-auth>=2.36.0
+google-auth-oauthlib>=1.2.0
+gspread>=6.1.0
+google-api-python-client>=2.150.0
+
+# ── Notion 연동 ──────────────────────────
+notion-client>=2.2.1
+
+# ── 웹 인터페이스 ────────────────────────
+flask>=3.0.0
+
+# ── 파일 파싱 ────────────────────────────
+python-pptx>=1.0.0
+pdfplumber>=0.11.0
+
+# ── 기타 ─────────────────────────────────
+python-dotenv>=1.0.1
+pandas>=2.2.0
+openpyxl>=3.1.2
+requests>=2.32.0
+jupyter>=1.1.0
