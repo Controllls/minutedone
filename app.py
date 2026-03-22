@@ -7,6 +7,7 @@ app.py — 티로 회의록 웹 인터페이스
 import os
 import sys
 import json
+import glob as glob_module
 from flask import Flask, render_template, request, jsonify, redirect
 from dotenv import load_dotenv
 
@@ -526,7 +527,7 @@ def gdrive_browse():
 
         items = res.get("files", [])
         folders = [f for f in items if f["mimeType"] == "application/vnd.google-apps.folder"]
-        files   = [f for f in items if f["mimeType"] != "application/vnd.google-apps.folder"]
+        files   = [f for f in items if f["name"].lower().endswith(".mp3")]
 
         return jsonify({
             "success":     True,
@@ -615,6 +616,61 @@ def gdrive_disconnect():
         os.remove(_GDRIVE_TOKEN)
     return jsonify({"success": True})
 
+
+# ============================================================
+# 관리자 — Rules
+# ============================================================
+
+_RULES_DIR = os.path.join(os.path.dirname(__file__), "config", "rules")
+
+
+def _safe_rule_name(name):
+    """파일 이름 경로 traversal 방지"""
+    return "/" not in name and ".." not in name and name.endswith(".md")
+
+
+@app.route("/api/admin/rules", methods=["GET"])
+def admin_list_rules():
+    os.makedirs(_RULES_DIR, exist_ok=True)
+    files = sorted(glob_module.glob(os.path.join(_RULES_DIR, "*.md")))
+    return jsonify([os.path.basename(f) for f in files])
+
+
+@app.route("/api/admin/rules/<name>", methods=["GET"])
+def admin_get_rule(name):
+    if not _safe_rule_name(name):
+        return jsonify({"error": "invalid"}), 400
+    path = os.path.join(_RULES_DIR, name)
+    if not os.path.exists(path):
+        return jsonify({"error": "not found"}), 404
+    with open(path, "r", encoding="utf-8") as f:
+        return jsonify({"name": name, "content": f.read()})
+
+
+@app.route("/api/admin/rules/<name>", methods=["POST"])
+def admin_save_rule(name):
+    if not _safe_rule_name(name):
+        return jsonify({"error": "invalid name — .md 파일만 허용"}), 400
+    content = (request.get_json() or {}).get("content", "")
+    os.makedirs(_RULES_DIR, exist_ok=True)
+    with open(os.path.join(_RULES_DIR, name), "w", encoding="utf-8") as f:
+        f.write(content)
+    return jsonify({"ok": True})
+
+
+@app.route("/api/admin/rules/<name>", methods=["DELETE"])
+def admin_delete_rule(name):
+    if not _safe_rule_name(name):
+        return jsonify({"error": "invalid"}), 400
+    path = os.path.join(_RULES_DIR, name)
+    if os.path.exists(path):
+        os.remove(path)
+    return jsonify({"ok": True})
+
+
+# ============================================================
+# 관리자 — PPT 파일 목록 (업로드/삭제는 기존 /api/ppt/* 재사용)
+# ============================================================
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)

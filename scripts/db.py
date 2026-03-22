@@ -42,11 +42,16 @@ def init_db():
                 created_at TEXT DEFAULT (datetime('now','localtime'))
             )
         """)
-        # 기존 DB에 end_date 컬럼이 없으면 추가 (마이그레이션)
-        try:
-            con.execute("ALTER TABLE events ADD COLUMN end_date TEXT")
-        except Exception:
-            pass  # 이미 존재하면 무시
+        # 기존 DB 마이그레이션 — 누락 컬럼 추가
+        for col_ddl in [
+            "ALTER TABLE events ADD COLUMN end_date TEXT",
+            "ALTER TABLE events ADD COLUMN task_level TEXT",
+            "ALTER TABLE events ADD COLUMN parent_task TEXT",
+        ]:
+            try:
+                con.execute(col_ddl)
+            except Exception:
+                pass  # 이미 존재하면 무시
         con.execute("""
             CREATE TABLE IF NOT EXISTS recent_meetings (
                 id         INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -82,15 +87,19 @@ def save_events(events: list[dict]):
     with _conn() as con:
         con.execute("DELETE FROM events")
         con.executemany(
-            "INSERT INTO events(task, due_date, end_date, assignee, context) VALUES(?,?,?,?,?)",
+            """INSERT INTO events(task, due_date, end_date, assignee, context, task_level, parent_task)
+               VALUES(?,?,?,?,?,?,?)""",
             [(e.get("task",""), e.get("due_date",""), e.get("end_date") or None,
-              e.get("assignee",""), e.get("context","")) for e in events]
+              e.get("assignee",""), e.get("context",""),
+              e.get("task_level") or None, e.get("parent_task") or None) for e in events]
         )
 
 
 def load_events() -> list[dict]:
     with _conn() as con:
-        rows = con.execute("SELECT task, due_date, end_date, assignee, context FROM events").fetchall()
+        rows = con.execute(
+            "SELECT task, due_date, end_date, assignee, context, task_level, parent_task FROM events"
+        ).fetchall()
     return [dict(r) for r in rows]
 
 

@@ -82,8 +82,9 @@
 
     /* ══ 메인 콘텐츠 ══ */
     .main {
-      flex: 1; overflow-y: auto;
+      flex: 1; overflow-y: scroll;
       padding: 36px 48px;
+      scrollbar-gutter: stable;
     }
 
     /* 페이지 뷰 */
@@ -136,6 +137,13 @@
     .recent-meeting .sub { font-size: 12px; color: #999; margin-top: 2px; }
 
     /* 회의록 입력 */
+    .input-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+    .input-left, .input-right { min-width: 0; }
     .section-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
     .section-sub { font-size: 13px; color: #888; margin-bottom: 24px; }
 
@@ -862,6 +870,104 @@
       transition: all 0.1s; flex-shrink: 0;
     }
     .rec-device-refresh:hover { background: #f5f5f0; color: #333; }
+    /* ══ 관리자 — 일정 데이터 테이블 ══ */
+    .events-table-wrap { overflow-x: auto; margin-top: 16px; }
+    .events-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .events-table th {
+      background: #f5f5f0; text-align: left; padding: 9px 12px;
+      font-size: 11px; font-weight: 700; color: #888; letter-spacing: 0.04em;
+      border-bottom: 2px solid #e8e8e4; white-space: nowrap;
+    }
+    .events-table td {
+      padding: 9px 12px; border-bottom: 1px solid #f0f0ec;
+      vertical-align: top; max-width: 240px; word-break: break-word;
+    }
+    .events-table tr:hover td { background: #fafaf8; }
+    .events-table .del-btn {
+      background: none; border: none; cursor: pointer;
+      color: #e53935; font-size: 14px; padding: 2px 4px; border-radius: 4px;
+    }
+    .events-table .del-btn:hover { background: #fdecea; }
+    .admin-search-row {
+      display: flex; gap: 10px; align-items: center; margin-top: 6px;
+    }
+    .admin-search-row input {
+      flex: 1; padding: 7px 12px; border: 1px solid #e0e0da;
+      border-radius: 8px; font-size: 13px;
+    }
+    .events-count { font-size: 12px; color: #aaa; }
+    /* ══ 관리자 페이지 ══ */
+    .admin-layout {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 0;
+      height: calc(100vh - 160px);
+      border: 1px solid #e8e8e4;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .admin-sidebar {
+      border-right: 1px solid #e8e8e4;
+      display: flex; flex-direction: column;
+      background: #fafaf8;
+    }
+    .admin-sidebar-header {
+      padding: 14px 16px 10px;
+      font-size: 11px; font-weight: 700; color: #aaa;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      border-bottom: 1px solid #e8e8e4;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .admin-file-list { flex: 1; overflow-y: auto; padding: 6px 0; }
+    .admin-file-item {
+      padding: 8px 16px; font-size: 13px; cursor: pointer;
+      color: #444; display: flex; align-items: center; justify-content: space-between;
+      transition: background 0.1s;
+    }
+    .admin-file-item:hover { background: #f0f0ec; }
+    .admin-file-item.active { background: #efefeb; font-weight: 600; color: #111; }
+    .admin-file-item .file-del-btn {
+      opacity: 0; font-size: 12px; color: #e53935;
+      background: none; border: none; cursor: pointer; padding: 2px 4px; border-radius: 3px;
+    }
+    .admin-file-item:hover .file-del-btn { opacity: 1; }
+    .admin-editor {
+      display: flex; flex-direction: column;
+    }
+    .admin-editor-header {
+      padding: 12px 16px; border-bottom: 1px solid #e8e8e4;
+      display: flex; align-items: center; gap: 10px;
+      background: #fff;
+    }
+    .admin-editor-filename {
+      flex: 1; font-size: 13px; font-weight: 600;
+      background: none; border: 1px solid transparent; border-radius: 6px;
+      padding: 4px 8px; color: #1a1a1a;
+    }
+    .admin-editor-filename:focus { border-color: #5c6bc0; outline: none; background: #f5f5fb; }
+    .admin-editor-body { flex: 1; display: flex; flex-direction: column; padding: 0; }
+    .admin-editor-body textarea {
+      flex: 1; resize: none; border: none; outline: none;
+      font-family: "Menlo", "Consolas", monospace; font-size: 12.5px; line-height: 1.65;
+      padding: 16px; color: #2d2d2d; background: #fff;
+    }
+    .admin-empty-state {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      color: #bbb; font-size: 13px; gap: 8px;
+    }
+    .admin-new-btn {
+      background: none; border: 1px dashed #ccc; border-radius: 6px;
+      width: calc(100% - 16px); margin: 8px; padding: 7px;
+      font-size: 12px; color: #888; cursor: pointer; text-align: center;
+    }
+    .admin-new-btn:hover { background: #f0f0ec; border-color: #aaa; color: #333; }
+    @media (max-width: 768px) {
+      .admin-layout { grid-template-columns: 1fr; height: auto; }
+      .admin-sidebar { border-right: none; border-bottom: 1px solid #e8e8e4; max-height: 180px; }
+      .admin-editor-body textarea { min-height: 300px; }
+    }
     /* ══ PPT 참고 선택 (회의록 입력) ══ */
     .ppt-ref-row {
       margin-bottom: 16px; background: #f8f8fb;
@@ -978,11 +1084,10 @@
       .main { padding: 68px 16px 32px; }
 
       .dash-grid { grid-template-columns: 1fr; }
+      .input-layout { grid-template-columns: 1fr; }
 
       .section-title { font-size: 17px; }
       .section-sub { margin-bottom: 16px; }
-
-      #transcriptInput { height: 260px; }
 
       .btn-row { flex-wrap: wrap; }
       .btn-row .btn { flex: 1; min-width: 120px; text-align: center; }
@@ -1082,30 +1187,14 @@
     <span class="user-name">김동석 ∨</span>
   </div>
 
-  <!-- 1. Dashboard -->
-  <div class="menu-item active" id="menu-dashboard" onclick="openMenu('dashboard')">
-    <span class="icon">🏠</span> Dashboard
-  </div>
-  <div class="submenu open" id="sub-dashboard">
-    <div class="menu-item active" id="menu-today-schedule" onclick="openPage('today-schedule')">
-      <span class="icon">📅</span> 일정 관리
-    </div>
-    <div class="menu-item" id="menu-calendar" onclick="openPage('calendar'); renderCalendar()">
-      <span class="icon">🗓️</span> 캘린더
-    </div>
-<div class="menu-item" id="menu-week-actions" onclick="openPage('week-actions')">
-      <span class="icon">⚡</span> 이번 주 액션 아이템
-    </div>
+  <!-- 1. Dashboard (캘린더) -->
+  <div class="menu-item active" id="menu-dashboard" onclick="openMenu('dashboard'); openPage('calendar'); renderCalendar()">
+    <span class="icon">🗓️</span> 달력
   </div>
 
-  <!-- 2. 음성 녹음 -->
-  <div class="menu-item" id="menu-stt" onclick="openMenu('stt'); openPage('stt'); loadMicDevices()">
-    <span class="icon">🎤</span> 음성 녹음
-  </div>
-
-  <!-- 3. 회의록 입력 -->
-  <div class="menu-item" id="menu-input" onclick="openMenu('input'); openPage('input'); loadPptRefList()">
-    <span class="icon">🎙️</span> 회의록 입력
+  <!-- 2. 회의록 -->
+  <div class="menu-item" id="menu-input" onclick="openMenu('input'); openPage('input'); loadMicDevices(); loadPptRefList()">
+    <span class="icon">🎙️</span> 회의록
   </div>
 
   <!-- 3-1. 추출 결과 -->
@@ -1114,14 +1203,24 @@
     <span class="extracted-count" id="extractedCount" style="display:none;"></span>
   </div>
 
-  <!-- 4. PPT 관리 -->
-  <div class="menu-item" id="menu-ppt" onclick="openMenu('ppt'); openPage('ppt'); loadPptList()">
-    <span class="icon">📂</span> PPT 관리
-  </div>
-
   <!-- 5. RAG 데이터 확인 -->
   <div class="menu-item" id="menu-rag-debug" onclick="openMenu('rag-debug'); openPage('rag-debug'); loadRagDocs()">
     <span class="icon">🗄️</span> 저장된 정보
+  </div>
+
+  <!-- 관리자 섹션 -->
+  <div class="menu-section">관리자</div>
+
+  <div class="menu-item" id="menu-admin-events" onclick="openMenu('admin-events'); openPage('admin-events'); renderAdminEvents()">
+    <span class="icon">📅</span> 일정 데이터
+  </div>
+
+  <div class="menu-item" id="menu-admin-rules" onclick="openMenu('admin-rules'); openPage('admin-rules'); loadAdminRules()">
+    <span class="icon">📋</span> Rules 편집
+  </div>
+
+  <div class="menu-item" id="menu-ppt" onclick="openMenu('ppt'); openPage('ppt'); loadPptList()">
+    <span class="icon">📂</span> PPT 관리
   </div>
 
   <!-- 토큰 카운터 -->
@@ -1149,7 +1248,7 @@
   <!-- 패치노트 버튼 -->
   <div class="patchnote-btn" onclick="document.getElementById('patchnoteOverlay').classList.add('show')">
     <span>📋</span>
-    <span class="patchnote-version">v1.4.0</span>
+    <span class="patchnote-version">v1.5.0</span>
     <span>패치노트</span>
   </div>
 
@@ -1163,6 +1262,20 @@
       <span class="patchnote-close" onclick="document.getElementById('patchnoteOverlay').classList.remove('show')">✕</span>
     </div>
     <div class="patchnote-body">
+
+      <div class="patchnote-item">
+        <div>
+          <span class="patchnote-item-version">v1.5.0</span>
+          <span class="patchnote-item-date">2026-03-22</span>
+        </div>
+        <ul>
+          <li>회의록 페이지 2컬럼 레이아웃 — 왼쪽 입력 방식(마이크/파일/Drive), 오른쪽 녹취록 텍스트 상시 표시</li>
+          <li>관리자 메뉴 신설 — 일정 데이터 조회·삭제, Rules 편집, PPT 관리</li>
+          <li>일정 데이터 페이지 — 전체 일정 테이블 조회, 키워드 검색, 개별/전체 삭제</li>
+          <li>Rules 편집 페이지 — config/rules/*.md 파일 생성·편집·삭제 (웹 에디터)</li>
+          <li>버그 수정 — 새로고침 시 task_level·parent_task 소실로 달력·추출결과 깨지는 문제 (DB 컬럼 누락)</li>
+        </ul>
+      </div>
 
       <div class="patchnote-item">
         <div>
@@ -1238,8 +1351,140 @@
 <!-- 메인 콘텐츠 -->
 <div class="main">
 
+  <!-- 회의록 -->
+  <div class="page" id="page-input">
+    <div class="section-title">🎙️ 회의록</div>
+    <div class="section-sub">녹음하거나 텍스트를 직접 입력하세요.</div>
+
+    <div class="input-layout">
+
+      <!-- 왼쪽: 입력 방식 선택 -->
+      <div class="input-left">
+        <div class="rec-tab-row" style="margin-bottom:16px;">
+          <button class="rec-tab active" id="tab-mic"    onclick="switchRecTab('mic')">🎤 마이크</button>
+          <button class="rec-tab"        id="tab-file"   onclick="switchRecTab('file')">📁 파일 업로드</button>
+          <button class="rec-tab"        id="tab-gdrive" onclick="switchRecTab('gdrive')">☁️ Google Drive</button>
+        </div>
+
+        <!-- 마이크 탭 -->
+        <div id="recTabMic">
+          <div class="rec-mode-toggle">
+            <span>변환 방식:</span>
+            <button class="rec-mode-btn active" id="mode-browser" onclick="setRecMode('browser')">브라우저 STT</button>
+            <button class="rec-mode-btn" id="mode-whisper" onclick="setRecMode('whisper')">Whisper (서버)</button>
+          </div>
+          <div class="rec-device-row">
+            <label>마이크</label>
+            <select class="rec-device-select" id="recDeviceSelect" onchange="onDeviceChange()">
+              <option value="">기본 마이크</option>
+            </select>
+            <button class="rec-device-refresh" onclick="loadMicDevices()" title="장치 목록 새로고침">↺</button>
+          </div>
+          <div class="rec-status-bar">
+            <div class="rec-status-dot idle" id="recStatusDot"></div>
+            <span id="recStatusText">마이크 버튼을 눌러 녹음을 시작하세요</span>
+          </div>
+          <div class="rec-center" style="margin-bottom:16px;">
+            <button class="rec-btn idle" id="recBtn" onclick="toggleRecording()">🎤</button>
+            <canvas id="recCanvas" width="260" height="52" style="display:none;border-radius:10px;background:#f8f8fb;"></canvas>
+            <div class="rec-timer" id="recTimer">0:00</div>
+            <div class="rec-hint" id="recHint">버튼을 눌러 시작</div>
+          </div>
+        </div>
+
+        <!-- 파일 업로드 탭 -->
+        <div id="recTabFile" style="display:none;">
+          <div class="rec-file-info">
+            핸드폰 녹음 파일을 업로드하세요.<br>
+            <span style="color:#aaa;">지원 형식: m4a, mp3, wav, webm, ogg, flac (최대 25MB)</span>
+          </div>
+          <input type="file" id="recAudioFileInput" accept=".m4a,.mp3,.wav,.webm,.ogg,.flac,audio/*"
+            style="position:absolute;width:0;height:0;opacity:0;overflow:hidden;"
+            onchange="onAudioFileSelect(this)">
+          <label class="rec-file-drop" id="recFileDrop" for="recAudioFileInput"
+            ondragover="event.preventDefault();this.classList.add('drag-over')"
+            ondragleave="this.classList.remove('drag-over')"
+            ondrop="onAudioFileDrop(event)">
+            <div class="rec-file-drop-icon">🎵</div>
+            <div>파일을 드래그하거나 클릭해서 선택</div>
+            <div id="recFileDropName" style="margin-top:6px;font-size:12px;color:#5c6bc0;"></div>
+          </label>
+          <button class="btn btn-primary" id="btnTranscribeFile" style="width:100%;margin-top:12px;"
+            onclick="transcribeFile()" disabled>⏳ Whisper로 변환</button>
+          <div class="rec-file-progress" id="recFileProgress" style="display:none;">
+            <div class="rec-file-progress-bar" id="recFileProgressBar"></div>
+          </div>
+        </div>
+
+        <!-- Google Drive 탭 -->
+        <div id="recTabGdrive" style="display:none;">
+          <div id="gdriveAuthSection">
+            <div class="gdrive-connect-box">
+              <div style="font-size:32px;">☁️</div>
+              <div style="font-weight:700;margin:8px 0 4px;">Google Drive 연결</div>
+              <div style="font-size:12px;color:#aaa;margin-bottom:16px;">핸드폰 녹음 앱이 저장한 파일을 Drive에서 바로 가져옵니다.</div>
+              <button class="btn btn-primary" onclick="gdriveAuth()">Google 계정으로 연결</button>
+              <div class="gdrive-setup-hint">
+                설정 필요: <code>GOOGLE_CLIENT_ID</code>, <code>GOOGLE_CLIENT_SECRET</code>을 config/.env에 추가하세요.
+              </div>
+            </div>
+          </div>
+          <div id="gdriveFilesSection" style="display:none;">
+            <div class="gdrive-header">
+              <div class="gdrive-breadcrumb" id="gdriveBreadcrumb">
+                <span class="gdrive-bc-item active" onclick="gdriveBrowse('root')">☁️ 내 드라이브</span>
+              </div>
+              <div style="display:flex;gap:8px;">
+                <button class="ppt-btn" onclick="gdriveBrowse(gdriveCurrentFolder)">↺</button>
+                <button class="ppt-btn del" onclick="gdriveDisconnect()">연결 해제</button>
+              </div>
+            </div>
+            <div id="gdriveFileList"><div class="task-empty">로딩 중...</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 오른쪽: 녹취록 텍스트 (항상 표시) -->
+      <div class="input-right">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <label class="input-label" style="margin-bottom:0;">녹취록 텍스트</label>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <div class="rec-status-dot idle" id="recStatusDot2" style="width:7px;height:7px;"></div>
+            <span id="recStatusText2" style="font-size:11.5px;color:#aaa;">대기 중</span>
+            <button class="btn btn-secondary" style="padding:3px 10px;font-size:12px;" onclick="document.getElementById('transcriptInput').value=''; syncRecStatus()">지우기</button>
+          </div>
+        </div>
+        <textarea id="transcriptInput" placeholder="녹음하거나 직접 붙여넣으세요..." style="height:360px;resize:vertical;"></textarea>
+
+        <!-- PPT 참고 선택 -->
+        <div class="ppt-ref-row" id="pptRefRow" style="margin-top:12px;">
+          <div class="ppt-ref-label">
+            <span>📎 참고 PPT</span>
+            <button class="ppt-ref-refresh" onclick="loadPptRefList()" title="목록 새로고침">↺</button>
+          </div>
+          <select class="ppt-ref-select" id="pptRefSelect" onchange="onPptRefChange()">
+            <option value="">선택 안 함</option>
+          </select>
+          <div class="ppt-ref-preview" id="pptRefPreview" style="display:none;">
+            <div class="ppt-ref-preview-header">
+              <span id="pptRefPreviewTitle"></span>
+              <span id="pptRefPreviewLen"></span>
+              <button class="ppt-ref-toggle" onclick="togglePptPreview()">내용 보기 ▾</button>
+            </div>
+            <pre class="ppt-ref-text" id="pptRefText" style="display:none;"></pre>
+          </div>
+        </div>
+
+        <div class="btn-row" style="margin-top:12px;">
+          <button class="btn btn-primary" id="btnCalendar" onclick="runCalendar()">저장</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <!-- Dashboard: 일정 관리 -->
-  <div class="page active" id="page-today-schedule">
+  <div class="page" id="page-today-schedule">
     <div style="display:flex;align-items:center;justify-content:space-between;">
       <div class="section-title" style="margin-bottom:0;">📅 일정 관리</div>
       <div style="display:flex;gap:8px;">
@@ -1284,11 +1529,12 @@
   </div>
 
   <!-- Dashboard: 캘린더 -->
-  <div class="page" id="page-calendar">
+  <div class="page active" id="page-calendar">
     <div class="cal-nav">
       <button class="cal-nav-btn" onclick="calMove(-1)">‹</button>
       <span class="cal-nav-title" id="calTitle"></span>
       <button class="cal-nav-btn" onclick="calMove(1)">›</button>
+      <button class="btn btn-danger" style="padding:5px 12px;font-size:12px;margin-left:8px;" onclick="clearDashboard()">🗑 초기화</button>
     </div>
     <div class="cal-wrap">
       <div class="cal-grid" id="calGrid"></div>
@@ -1309,162 +1555,6 @@
     <div class="section-sub">오늘부터 7일간 해야 할 일</div>
     <div style="margin-top:20px;" id="upcoming-list">
       <div class="task-empty">회의록을 입력하면 일정이 여기에 표시됩니다.</div>
-    </div>
-  </div>
-
-  <!-- 음성 녹음 -->
-  <div class="page" id="page-stt">
-    <div class="rec-page">
-      <div class="section-title">🎤 음성 녹음</div>
-      <div class="section-sub">마이크로 회의를 녹음하면 텍스트로 자동 변환됩니다.</div>
-
-      <div style="margin-top:28px;">
-        <!-- 탭 -->
-        <div class="rec-tab-row">
-          <button class="rec-tab active" id="tab-mic"    onclick="switchRecTab('mic')">🎤 마이크 녹음</button>
-          <button class="rec-tab"        id="tab-file"   onclick="switchRecTab('file')">📁 파일 업로드</button>
-          <button class="rec-tab"        id="tab-gdrive" onclick="switchRecTab('gdrive')">☁️ Google Drive</button>
-        </div>
-
-        <!-- 마이크 녹음 탭 -->
-        <div id="recTabMic">
-          <div class="rec-mode-toggle">
-            <span>변환 방식:</span>
-            <button class="rec-mode-btn active" id="mode-browser" onclick="setRecMode('browser')">브라우저 STT</button>
-            <button class="rec-mode-btn" id="mode-whisper" onclick="setRecMode('whisper')">Whisper (서버)</button>
-          </div>
-
-          <div class="rec-device-row">
-            <label>마이크</label>
-            <select class="rec-device-select" id="recDeviceSelect" onchange="onDeviceChange()">
-              <option value="">기본 마이크</option>
-            </select>
-            <button class="rec-device-refresh" onclick="loadMicDevices()" title="장치 목록 새로고침">↺</button>
-          </div>
-
-          <div class="rec-status-bar">
-            <div class="rec-status-dot idle" id="recStatusDot"></div>
-            <span id="recStatusText">마이크 버튼을 눌러 녹음을 시작하세요</span>
-          </div>
-
-          <div class="rec-center">
-            <button class="rec-btn idle" id="recBtn" onclick="toggleRecording()">🎤</button>
-            <canvas id="recCanvas" width="260" height="52" style="display:none;border-radius:10px;background:#f8f8fb;"></canvas>
-            <div class="rec-timer" id="recTimer">0:00</div>
-            <div class="rec-hint" id="recHint">버튼을 눌러 시작</div>
-          </div>
-        </div>
-
-        <!-- 파일 업로드 탭 -->
-        <div id="recTabFile" style="display:none;">
-          <div class="rec-file-info">
-            핸드폰 녹음 파일을 PC로 옮긴 후 업로드하세요.<br>
-            <span style="color:#aaa;">지원 형식: m4a, mp3, wav, webm, ogg, flac (최대 25MB)</span>
-          </div>
-          <input type="file" id="recAudioFileInput" accept=".m4a,.mp3,.wav,.webm,.ogg,.flac,audio/*"
-            style="position:absolute;width:0;height:0;opacity:0;overflow:hidden;"
-            onchange="onAudioFileSelect(this)">
-          <label class="rec-file-drop" id="recFileDrop" for="recAudioFileInput"
-            ondragover="event.preventDefault();this.classList.add('drag-over')"
-            ondragleave="this.classList.remove('drag-over')"
-            ondrop="onAudioFileDrop(event)">
-            <div class="rec-file-drop-icon">🎵</div>
-            <div>파일을 드래그하거나 클릭해서 선택</div>
-            <div id="recFileDropName" style="margin-top:6px;font-size:12px;color:#5c6bc0;"></div>
-          </label>
-          <button class="btn btn-primary" id="btnTranscribeFile" style="width:100%;margin-top:12px;"
-            onclick="transcribeFile()" disabled>
-            ⏳ Whisper로 변환
-          </button>
-          <div class="rec-file-progress" id="recFileProgress" style="display:none;">
-            <div class="rec-file-progress-bar" id="recFileProgressBar"></div>
-          </div>
-        </div>
-
-        <!-- Google Drive 탭 -->
-        <div id="recTabGdrive" style="display:none;">
-          <div id="gdriveAuthSection">
-            <div class="gdrive-connect-box">
-              <div style="font-size:32px;">☁️</div>
-              <div style="font-weight:700;margin:8px 0 4px;">Google Drive 연결</div>
-              <div style="font-size:12px;color:#aaa;margin-bottom:16px;">핸드폰 녹음 앱이 저장한 파일을 Drive에서 바로 가져옵니다.</div>
-              <button class="btn btn-primary" onclick="gdriveAuth()">Google 계정으로 연결</button>
-              <div class="gdrive-setup-hint">
-                설정 필요: <code>GOOGLE_CLIENT_ID</code>, <code>GOOGLE_CLIENT_SECRET</code>을 config/.env에 추가하세요.<br>
-                <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color:#5c6bc0;">Google Cloud Console →</a>
-                (OAuth 2.0 클라이언트 ID, 리디렉션 URI: <code>http://localhost:5000/api/gdrive/callback</code>)
-              </div>
-            </div>
-          </div>
-
-          <div id="gdriveFilesSection" style="display:none;">
-            <div class="gdrive-header">
-              <div class="gdrive-breadcrumb" id="gdriveBreadcrumb">
-                <span class="gdrive-bc-item active" onclick="gdriveBrowse('root')">☁️ 내 드라이브</span>
-              </div>
-              <div style="display:flex;gap:8px;">
-                <button class="ppt-btn" onclick="gdriveBrowse(gdriveCurrentFolder)">↺</button>
-                <button class="ppt-btn del" onclick="gdriveDisconnect()">연결 해제</button>
-              </div>
-            </div>
-            <div id="gdriveFileList">
-              <div class="task-empty">로딩 중...</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 공통 — 텍스트 출력 & 액션 -->
-        <div class="rec-transcript-wrap" style="margin-top:16px;">
-          <span class="placeholder" id="transcriptPlaceholder">녹음하면 여기에 텍스트가 표시됩니다...</span>
-          <div id="recTranscript"></div>
-        </div>
-
-        <div class="rec-actions">
-          <button class="btn btn-secondary" onclick="clearRecTranscript()">지우기</button>
-          <button class="btn btn-primary" id="btnUseTranscript" onclick="useTranscriptAsMeeting()" disabled>
-            회의록으로 사용 →
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 회의록 입력 -->
-  <div class="page" id="page-input">
-    <div class="section-title">🎙️ 회의록 입력</div>
-    <div class="section-sub">STT 녹취록을 붙여넣고 캘린더에 등록하세요.</div>
-
-    <!-- PPT 참고 선택 -->
-    <div class="ppt-ref-row" id="pptRefRow">
-      <div class="ppt-ref-label">
-        <span>📎 참고 PPT</span>
-        <button class="ppt-ref-refresh" onclick="loadPptRefList()" title="목록 새로고침">↺</button>
-      </div>
-      <select class="ppt-ref-select" id="pptRefSelect" onchange="onPptRefChange()">
-        <option value="">선택 안 함</option>
-      </select>
-      <div class="ppt-ref-preview" id="pptRefPreview" style="display:none;">
-        <div class="ppt-ref-preview-header">
-          <span id="pptRefPreviewTitle"></span>
-          <span id="pptRefPreviewLen"></span>
-          <button class="ppt-ref-toggle" onclick="togglePptPreview()">내용 보기 ▾</button>
-        </div>
-        <pre class="ppt-ref-text" id="pptRefText" style="display:none;"></pre>
-      </div>
-    </div>
-
-    <label class="input-label">녹취록 텍스트</label>
-    <textarea id="transcriptInput" placeholder="녹취록을 여기에 붙여넣으세요..."></textarea>
-
-    <div class="btn-row">
-      <button class="btn btn-primary" id="btnCalendar" onclick="runCalendar()">
-        저장
-      </button>
-    </div>
-
-    <div id="extractedPanel">
-      <div class="panel-title">📌 추출된 일정</div>
-      <div id="eventList"></div>
     </div>
   </div>
 
@@ -1508,6 +1598,69 @@
     <div class="task-view-label">Tasks</div>
     <div class="section-title">완료 업무</div>
     <div id="task-done"><div class="task-empty">완료된 업무가 없습니다.</div></div>
+  </div>
+
+  <!-- 관리자: 일정 데이터 -->
+  <div class="page" id="page-admin-events">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div class="section-title" style="margin-bottom:0;">📅 일정 데이터</div>
+      <button class="btn btn-danger" style="padding:5px 14px;font-size:12px;" onclick="if(confirm('모든 일정을 삭제할까요?')){clearDashboard(); renderAdminEvents();}">🗑 전체 삭제</button>
+    </div>
+    <div class="admin-search-row" style="margin-top:10px;">
+      <input id="adminEventsSearch" type="text" placeholder="태스크·담당자·날짜로 검색..." oninput="renderAdminEvents()" />
+      <span class="events-count" id="adminEventsCount"></span>
+    </div>
+    <div class="events-table-wrap">
+      <table class="events-table">
+        <thead>
+          <tr>
+            <th>레벨</th>
+            <th>태스크</th>
+            <th>상위 태스크</th>
+            <th>마감일</th>
+            <th>담당자</th>
+            <th>맥락</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="adminEventsBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 관리자: Rules 편집 -->
+  <div class="page" id="page-admin-rules">
+    <div class="section-title">📋 Rules 편집</div>
+    <div class="section-sub">LLM에 주입되는 추출 규칙 파일을 편집합니다. (<code>config/rules/*.md</code>)</div>
+
+    <div class="admin-layout">
+      <!-- 왼쪽: 파일 목록 -->
+      <div class="admin-sidebar">
+        <div class="admin-sidebar-header">
+          <span>RULE FILES</span>
+        </div>
+        <div class="admin-file-list" id="adminRuleList"></div>
+        <button class="admin-new-btn" onclick="adminNewRule()">+ 새 파일</button>
+      </div>
+
+      <!-- 오른쪽: 에디터 -->
+      <div class="admin-editor" id="adminEditor">
+        <div class="admin-empty-state" id="adminEditorEmpty">
+          <div style="font-size:32px;">📄</div>
+          <div>왼쪽에서 파일을 선택하거나 새 파일을 만드세요</div>
+        </div>
+        <div id="adminEditorContent" style="display:none;flex-direction:column;flex:1;">
+          <div class="admin-editor-header">
+            <input class="admin-editor-filename" id="adminFilename" type="text" placeholder="파일명.md" />
+            <button class="btn btn-primary" style="padding:5px 16px;font-size:13px;" onclick="adminSaveRule()">저장</button>
+            <button class="btn btn-danger"  style="padding:5px 14px;font-size:13px;" onclick="adminDeleteRule()">삭제</button>
+          </div>
+          <div class="admin-editor-body">
+            <textarea id="adminRuleEditor" placeholder="# 규칙 제목&#10;&#10;규칙 내용을 Markdown으로 작성하세요..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- PPT 관리 -->
@@ -1556,6 +1709,7 @@
 
     <div id="ragDocList"><div class="rag-empty">로딩 중...</div></div>
   </div>
+
 
 </div>
 
@@ -1654,7 +1808,7 @@
   // ── 메뉴 네비게이션 ──
   function openMenu(name) {
     // 상위 메뉴 active 처리 (서브메뉴는 항상 표시)
-    ['dashboard','task','input','stt','rag-debug'].forEach(m => {
+    ['dashboard','task','input','stt','rag-debug','admin-rules','admin-events','ppt'].forEach(m => {
       document.getElementById('menu-' + m)?.classList.remove('active');
     });
     document.getElementById('menu-' + name)?.classList.add('active');
@@ -1719,6 +1873,7 @@
         renderCalendar(); renderUpcoming();
         await addToRag(transcript, `회의록 ${new Date().toLocaleDateString('ko-KR')}`);
         document.getElementById('transcriptInput').value = '';
+        syncRecStatus();
         updateTokenCounter(data.usage);
         showToast(`✅ 저장 완료! ${data.created}개 일정이 Notion 캘린더에 등록됐어요!`);
       } else {
@@ -1728,7 +1883,7 @@
       showToast('❌ 서버 오류: ' + e.message);
     } finally {
       btn.disabled = false;
-      btn.innerHTML = '📋 회의록 등록하기';
+      btn.innerHTML = '저장';
     }
   }
 
@@ -1788,13 +1943,86 @@
   function showExtractedPage() {
     const sub  = document.getElementById('extractedPageSub');
     const list = document.getElementById('extractedPageList');
-    if (!lastExtracted.length) {
-      sub.textContent  = '최근 추출된 일정이 없습니다.';
-      list.innerHTML   = '';
+    const source = lastExtracted.length ? lastExtracted : allEvents;
+
+    if (!source.length) {
+      sub.textContent = '최근 추출된 일정이 없습니다.';
+      list.innerHTML  = '';
       return;
     }
-    sub.textContent = `마지막 추출: ${lastExtracted.length}건`;
-    list.innerHTML  = document.getElementById('eventList').innerHTML;
+
+    const dateBadge = ev => {
+      const isTbd = !ev.due_date || ev.due_date.toUpperCase() === 'TBD';
+      return `<span class="badge ${isTbd ? 'badge-orange' : 'badge-green'}">${isTbd ? 'TBD' : ev.due_date}</span>`;
+    };
+    const levelBadge = ev => {
+      if (ev.task_level === 'parent') return `<span class="badge badge-parent">parent</span>`;
+      if (ev.task_level === 'sub')    return `<span class="badge badge-sub">sub</span>`;
+      return `<span class="badge badge-solo">task</span>`;
+    };
+    const fieldChips = ev => {
+      const chips = [];
+      if (ev.assignee)   chips.push(`<span class="field-chip"><b>담당</b> ${ev.assignee}</span>`);
+      if (ev.parent_task) chips.push(`<span class="field-chip"><b>상위</b> ${ev.parent_task}</span>`);
+      return chips.length ? `<div class="card-fields">${chips.join('')}</div>` : '';
+    };
+
+    const parents  = source.filter(e => e.task_level === 'parent');
+    const solos    = source.filter(e => e.task_level !== 'parent' && e.task_level !== 'sub');
+    const subs     = source.filter(e => e.task_level === 'sub');
+    const tbdCount = source.filter(e => !e.due_date || e.due_date.toUpperCase() === 'TBD').length;
+
+    sub.textContent = `총 ${source.length}건 · parent ${parents.length} · sub ${subs.length} · 독립 ${solos.length} · TBD ${tbdCount}`;
+
+    let html = `
+      <div class="extract-header">
+        <div></div>
+        <button class="btn-raw-toggle" onclick="toggleRawJson()">{ } JSON 보기</button>
+      </div>
+      <div class="raw-json-box" id="rawJsonBox">
+        <pre id="rawJsonPre">${JSON.stringify(source, null, 2)}</pre>
+      </div>`;
+
+    parents.forEach(p => {
+      const children = subs.filter(s => s.parent_task === p.task);
+      html += `<div class="event-group">
+        <div class="event-card-parent">
+          <div class="task-name">${p.task || ''}</div>
+          <div class="card-meta">${levelBadge(p)} ${dateBadge(p)}${p.assignee ? ` &nbsp;담당: ${p.assignee}` : ''}</div>
+          ${p.context ? `<div class="card-ctx">💬 ${p.context}</div>` : ''}
+        </div>
+        ${children.map(s => `
+          <div class="event-card-sub">
+            <div class="task-name">${s.task || ''}</div>
+            <div class="card-meta">${levelBadge(s)} ${dateBadge(s)}</div>
+            ${fieldChips(s)}
+            ${s.context ? `<div class="card-ctx">💬 ${s.context}</div>` : ''}
+          </div>`).join('')}
+      </div>`;
+    });
+
+    // parent 없는 orphan subs
+    const orphans = subs.filter(s => s.parent_task && !parents.find(p => p.task === s.parent_task));
+    orphans.forEach(ev => {
+      html += `<div class="event-card-sub" style="margin-left:0;">
+        <div class="task-name">${ev.task || ''}</div>
+        <div class="card-meta">${levelBadge(ev)} ${dateBadge(ev)}</div>
+        ${fieldChips(ev)}
+        ${ev.context ? `<div class="card-ctx">💬 ${ev.context}</div>` : ''}
+      </div>`;
+    });
+
+    solos.forEach(ev => {
+      html += `<div class="event-group">
+        <div class="event-card-parent">
+          <div class="task-name">${ev.task || ''}</div>
+          <div class="card-meta">${dateBadge(ev)}${ev.assignee ? ` &nbsp;담당: ${ev.assignee}` : ''}</div>
+          ${ev.context ? `<div class="card-ctx">💬 ${ev.context}</div>` : ''}
+        </div>
+      </div>`;
+    });
+
+    list.innerHTML = html;
   }
 
   function _updateExtractedBadge(count) {
@@ -1810,103 +2038,10 @@
   function renderExtracted(events) {
     lastExtracted = events;
     _updateExtractedBadge(events.length);
-    const panel = document.getElementById('extractedPanel');
-    const list  = document.getElementById('eventList');
-
-    const dateBadge = ev => {
-      const isTbd = !ev.due_date || ev.due_date.toUpperCase() === 'TBD';
-      return `<span class="badge ${isTbd ? 'badge-orange' : 'badge-green'}">${isTbd ? 'TBD' : ev.due_date}</span>`;
-    };
-
-    const levelBadge = ev => {
-      if (ev.task_level === 'parent') return `<span class="badge badge-parent">parent</span>`;
-      if (ev.task_level === 'sub')    return `<span class="badge badge-sub">sub</span>`;
-      return `<span class="badge badge-solo">task</span>`;
-    };
-
-    const fieldChips = ev => {
-      const chips = [];
-      if (ev.assignee) chips.push(`<span class="field-chip"><b>담당</b> ${ev.assignee}</span>`);
-      if (ev.parent_task) chips.push(`<span class="field-chip"><b>상위</b> ${ev.parent_task}</span>`);
-      return chips.length ? `<div class="card-fields">${chips.join('')}</div>` : '';
-    };
-
-    // parent 그룹 구성
-    const parents = events.filter(ev => ev.task_level === 'parent');
-    const solos   = events.filter(ev => ev.task_level !== 'parent' && !ev.parent_task);
-    const getChildren = p => events.filter(ev => ev.task_level === 'sub' && ev.parent_task === p.task);
-
-    let html = '';
-
-    // 헤더
-    const parentCount = parents.length;
-    const subCount    = events.filter(ev => ev.task_level === 'sub').length;
-    const soloCount   = solos.length;
-    const tbdCount    = events.filter(ev => !ev.due_date || ev.due_date.toUpperCase() === 'TBD').length;
-    html += `
-      <div class="extract-header">
-        <div class="extract-summary">
-          총 <b>${events.length}건</b> &nbsp;·&nbsp;
-          parent <b>${parentCount}</b> &nbsp;·&nbsp;
-          sub <b>${subCount}</b> &nbsp;·&nbsp;
-          독립 <b>${soloCount}</b> &nbsp;·&nbsp;
-          TBD <b>${tbdCount}</b>
-        </div>
-        <button class="btn-raw-toggle" onclick="toggleRawJson()">{ } JSON 보기</button>
-      </div>
-      <div class="raw-json-box" id="rawJsonBox">
-        <pre id="rawJsonPre"></pre>
-      </div>`;
-
-    // parent + children 그룹
-    parents.forEach(p => {
-      const children = getChildren(p);
-      html += `<div class="event-group">
-        <div class="event-card-parent">
-          <div class="task-name">${p.task}</div>
-          <div class="card-meta">${levelBadge(p)} ${dateBadge(p)}${p.assignee ? ' &nbsp;담당: ' + p.assignee : ''}</div>
-          ${p.context ? `<div class="card-ctx">💬 ${p.context}</div>` : ''}
-        </div>`;
-      children.forEach(sub => {
-        html += `
-        <div class="event-card-sub">
-          <div class="task-name">${sub.task}</div>
-          <div class="card-meta">${levelBadge(sub)} ${dateBadge(sub)}</div>
-          ${fieldChips(sub)}
-          ${sub.context ? `<div class="card-ctx">💬 ${sub.context}</div>` : ''}
-        </div>`;
-      });
-      html += `</div>`;
-    });
-
-    // parent 없이 sub인 것 (parent_task 명시됐지만 parent가 목록에 없는 경우)
-    const orphans = events.filter(ev => ev.task_level === 'sub' && ev.parent_task && !parents.find(p => p.task === ev.parent_task));
-    if (orphans.length) {
-      html += `<div class="panel-title" style="margin-top:8px;color:#888;">연결되지 않은 sub 태스크</div>`;
-      orphans.forEach(ev => {
-        html += `<div class="event-card-sub" style="margin-left:0;">
-          <div class="task-name">${ev.task}</div>
-          <div class="card-meta">${levelBadge(ev)} ${dateBadge(ev)}</div>
-          ${fieldChips(ev)}
-          ${ev.context ? `<div class="card-ctx">💬 ${ev.context}</div>` : ''}
-        </div>`;
-      });
-    }
-
-    // 독립 태스크 — parent 그룹과 같은 레벨로 이어서 표시
-    solos.forEach(ev => {
-      html += `<div class="event-group">
-        <div class="event-card-parent">
-          <div class="task-name">${ev.task}</div>
-          <div class="card-meta">${dateBadge(ev)}${ev.assignee ? ' &nbsp;담당: ' + ev.assignee : ''}</div>
-          ${ev.context ? `<div class="card-ctx">💬 ${ev.context}</div>` : ''}
-        </div>
-      </div>`;
-    });
-
-    list.innerHTML = html;
-    document.getElementById('rawJsonPre').textContent = JSON.stringify(events, null, 2);
-    panel.style.display = 'block';
+    // 결과 페이지로 이동 후 렌더
+    openMenu('extracted');
+    openPage('extracted');
+    showExtractedPage();
   }
 
   function toggleRawJson() {
@@ -2314,6 +2449,134 @@
     }
   }
 
+  // ── 관리자: 일정 데이터 ──
+  function renderAdminEvents() {
+    const q = (document.getElementById('adminEventsSearch')?.value || '').toLowerCase();
+    const filtered = allEvents.filter(e =>
+      !q ||
+      (e.task || '').toLowerCase().includes(q) ||
+      (e.assignee || '').toLowerCase().includes(q) ||
+      (e.due_date || '').includes(q) ||
+      (e.parent_task || '').toLowerCase().includes(q)
+    );
+
+    const levelBadge = lv => {
+      if (lv === 'parent') return '<span class="badge badge-parent">parent</span>';
+      if (lv === 'sub')    return '<span class="badge badge-sub">sub</span>';
+      return '<span class="badge badge-solo">task</span>';
+    };
+
+    const tbody = document.getElementById('adminEventsBody');
+    if (!filtered.length) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:#bbb;padding:32px;">일정 데이터가 없습니다.</td></tr>`;
+    } else {
+      tbody.innerHTML = filtered.map((e, i) => `
+        <tr>
+          <td>${levelBadge(e.task_level)}</td>
+          <td>${e.task || ''}</td>
+          <td style="color:#888;">${e.parent_task || ''}</td>
+          <td><span class="badge ${(!e.due_date || e.due_date.toUpperCase()==='TBD') ? 'badge-orange' : 'badge-green'}">${e.due_date || 'TBD'}</span></td>
+          <td>${e.assignee || ''}</td>
+          <td style="color:#666;font-size:12px;">${e.context || ''}</td>
+          <td><button class="del-btn" onclick="adminDeleteEvent(${allEvents.indexOf(e)})" title="삭제">✕</button></td>
+        </tr>`).join('');
+    }
+    document.getElementById('adminEventsCount').textContent = `총 ${filtered.length}개`;
+  }
+
+  async function adminDeleteEvent(idx) {
+    if (idx < 0 || idx >= allEvents.length) return;
+    allEvents.splice(idx, 1);
+    await saveState();
+    renderCalendar();
+    renderTaskViews();
+    renderAdminEvents();
+    showToast('삭제됨');
+  }
+
+  // ── 관리자: Rules 편집 ──
+  let adminCurrentFile = null;
+
+  async function loadAdminRules() {
+    const res = await fetch('/api/admin/rules');
+    const files = await res.json();
+    const list = document.getElementById('adminRuleList');
+    if (!files.length) {
+      list.innerHTML = '<div style="padding:12px 16px;font-size:12px;color:#bbb;">파일 없음</div>';
+      return;
+    }
+    list.innerHTML = files.map(f => `
+      <div class="admin-file-item ${f === adminCurrentFile ? 'active' : ''}" id="ruleitem-${CSS.escape(f)}" onclick="adminOpenRule('${f}')">
+        <span>${f}</span>
+        <button class="file-del-btn" onclick="event.stopPropagation();adminDeleteRuleByName('${f}')" title="삭제">✕</button>
+      </div>`).join('');
+    if (adminCurrentFile && files.includes(adminCurrentFile)) adminOpenRule(adminCurrentFile);
+  }
+
+  async function adminOpenRule(name) {
+    adminCurrentFile = name;
+    // 목록 active 업데이트
+    document.querySelectorAll('.admin-file-item').forEach(el => el.classList.remove('active'));
+    document.getElementById('ruleitem-' + CSS.escape(name))?.classList.add('active');
+
+    const res = await fetch(`/api/admin/rules/${encodeURIComponent(name)}`);
+    const data = await res.json();
+    document.getElementById('adminFilename').value = data.name;
+    document.getElementById('adminRuleEditor').value = data.content;
+    document.getElementById('adminEditorEmpty').style.display = 'none';
+    const content = document.getElementById('adminEditorContent');
+    content.style.display = 'flex';
+    content.style.flexDirection = 'column';
+    content.style.flex = '1';
+  }
+
+  function adminNewRule() {
+    adminCurrentFile = null;
+    document.querySelectorAll('.admin-file-item').forEach(el => el.classList.remove('active'));
+    document.getElementById('adminFilename').value = '';
+    document.getElementById('adminRuleEditor').value = '';
+    document.getElementById('adminEditorEmpty').style.display = 'none';
+    const content = document.getElementById('adminEditorContent');
+    content.style.display = 'flex';
+    content.style.flexDirection = 'column';
+    content.style.flex = '1';
+    document.getElementById('adminFilename').focus();
+  }
+
+  async function adminSaveRule() {
+    let name = document.getElementById('adminFilename').value.trim();
+    if (!name) { showToast('파일 이름을 입력하세요.'); return; }
+    if (!name.endsWith('.md')) name += '.md';
+    const content = document.getElementById('adminRuleEditor').value;
+    const res = await fetch(`/api/admin/rules/${encodeURIComponent(name)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content })
+    });
+    if ((await res.json()).ok) {
+      adminCurrentFile = name;
+      showToast(`✅ ${name} 저장됨`);
+      loadAdminRules();
+    }
+  }
+
+  async function adminDeleteRule() {
+    if (!adminCurrentFile) return;
+    await adminDeleteRuleByName(adminCurrentFile);
+  }
+
+  async function adminDeleteRuleByName(name) {
+    if (!confirm(`"${name}" 파일을 삭제할까요?`)) return;
+    await fetch(`/api/admin/rules/${encodeURIComponent(name)}`, { method: 'DELETE' });
+    if (adminCurrentFile === name) {
+      adminCurrentFile = null;
+      document.getElementById('adminEditorContent').style.display = 'none';
+      document.getElementById('adminEditorEmpty').style.display = 'flex';
+    }
+    showToast(`🗑 ${name} 삭제됨`);
+    loadAdminRules();
+  }
+
   async function loadRagDocs() {
     try {
       const res = await fetch('/api/rag/documents');
@@ -2481,6 +2744,8 @@
 
     let evHtml = '';
     allEvents.forEach((e, idx) => {
+      // sub 태스크는 캘린더에 표시하지 않음 (parent/solo만 표시)
+      if (e.task_level === 'sub') return;
       const start = e.due_date;
       const end   = e.end_date || e.due_date;
       if (!start || start.toUpperCase() === 'TBD') return;
@@ -2718,16 +2983,39 @@
     const [y, m, d] = (e.due_date || '').split('-');
     document.getElementById('calDetailTitle').textContent =
       `${y}년 ${Number(m)}월 ${Number(d)}일${e.end_date && e.end_date !== e.due_date ? ' ~ ' + e.end_date : ''}`;
+
+    // parent의 sub 태스크 수집
+    const subs = allEvents
+      .map((s, si) => ({ s, si }))
+      .filter(({ s }) => s.task_level === 'sub' && s.parent_task === e.task);
+
+    const subHtml = subs.length ? `
+      <div style="margin:6px 0 0 22px;display:flex;flex-direction:column;gap:4px;">
+        ${subs.map(({ s, si }) => `
+          <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:#fafaf8;border-radius:6px;border-left:3px solid ${color.bg};">
+            <div style="flex:1;">
+              <div style="font-size:12.5px;font-weight:600;color:#222;">${s.task || ''}</div>
+              <div style="font-size:11px;color:#aaa;margin-top:2px;display:flex;gap:8px;">
+                ${s.due_date && s.due_date !== 'TBD' ? `<span>📅 ${s.due_date}</span>` : '<span>날짜 미정</span>'}
+                ${s.assignee ? `<span>👤 ${s.assignee}</span>` : ''}
+              </div>
+              ${s.context ? `<div style="font-size:11.5px;color:#777;margin-top:3px;">${s.context}</div>` : ''}
+            </div>
+            <span class="cal-detail-edit" onclick="openEditModal(${si})">수정</span>
+          </div>`).join('')}
+      </div>` : '';
+
     document.getElementById('calDetailItems').innerHTML = `
       <div class="cal-detail-item">
         <div class="cal-detail-dot" style="background:${color.bg};outline:2px solid ${color.text}40"></div>
-        <div class="cal-detail-body">
-          <div class="cal-detail-task">${e.task || ''}</div>
+        <div class="cal-detail-body" style="flex:1;">
+          <div class="cal-detail-task">${e.task || ''}${subs.length ? ` <span style="font-size:11px;color:#aaa;font-weight:400;">(하위 ${subs.length}개)</span>` : ''}</div>
           <div class="cal-detail-meta">
             <span>${range}</span>
             ${e.assignee ? `<span>담당: ${e.assignee}</span>` : ''}
           </div>
           ${e.context ? `<div class="cal-detail-ctx">${e.context}</div>` : ''}
+          ${subHtml}
         </div>
         <span class="cal-detail-edit" onclick="openEditModal(${idx})">수정</span>
       </div>`;
@@ -2735,9 +3023,11 @@
   }
 
   function showCalDetail(dateStr) {
+    // parent/solo만 날짜 범위 필터
     const evs = allEvents
       .map((e, idx) => ({ e, idx }))
       .filter(({ e }) => {
+        if (e.task_level === 'sub') return false;
         const start = e.due_date;
         const end   = e.end_date || e.due_date;
         return start && start !== 'TBD' && dateStr >= start && dateStr <= end;
@@ -2754,18 +3044,42 @@
       const color = CAL_COLORS[idx % CAL_COLORS.length];
       const range = e.end_date && e.end_date !== e.due_date
         ? `${e.due_date} ~ ${e.end_date}` : (e.due_date || 'TBD');
+
+      const subs = allEvents
+        .map((s, si) => ({ s, si }))
+        .filter(({ s }) => s.task_level === 'sub' && s.parent_task === e.task);
+
+      const subHtml = subs.length ? `
+        <div style="margin:6px 0 0 0;display:flex;flex-direction:column;gap:4px;">
+          ${subs.map(({ s, si }) => `
+            <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:#fafaf8;border-radius:6px;border-left:3px solid ${color.bg};">
+              <div style="flex:1;">
+                <div style="font-size:12.5px;font-weight:600;color:#222;">${s.task || ''}</div>
+                <div style="font-size:11px;color:#aaa;margin-top:2px;display:flex;gap:8px;">
+                  ${s.due_date && s.due_date !== 'TBD' ? `<span>📅 ${s.due_date}</span>` : '<span>날짜 미정</span>'}
+                  ${s.assignee ? `<span>👤 ${s.assignee}</span>` : ''}
+                </div>
+                ${s.context ? `<div style="font-size:11.5px;color:#777;margin-top:3px;">${s.context}</div>` : ''}
+              </div>
+              <span class="cal-detail-edit" onclick="openEditModal(${si})">수정</span>
+            </div>`).join('')}
+        </div>` : '';
+
       return `
-        <div class="cal-detail-item">
-          <div class="cal-detail-dot" style="background:${color.bg};outline:2px solid ${color.text}40"></div>
-          <div class="cal-detail-body">
-            <div class="cal-detail-task">${e.task || ''}</div>
-            <div class="cal-detail-meta">
-              <span>${range}</span>
-              ${e.assignee ? `<span>담당: ${e.assignee}</span>` : ''}
+        <div class="cal-detail-item" style="flex-direction:column;align-items:stretch;gap:6px;">
+          <div style="display:flex;align-items:flex-start;gap:12px;">
+            <div class="cal-detail-dot" style="background:${color.bg};outline:2px solid ${color.text}40;margin-top:3px;flex-shrink:0;"></div>
+            <div class="cal-detail-body" style="flex:1;">
+              <div class="cal-detail-task">${e.task || ''}${subs.length ? ` <span style="font-size:11px;color:#aaa;font-weight:400;">(하위 ${subs.length}개)</span>` : ''}</div>
+              <div class="cal-detail-meta">
+                <span>${range}</span>
+                ${e.assignee ? `<span>담당: ${e.assignee}</span>` : ''}
+              </div>
+              ${e.context ? `<div class="cal-detail-ctx">${e.context}</div>` : ''}
             </div>
-            ${e.context ? `<div class="cal-detail-ctx">${e.context}</div>` : ''}
+            <span class="cal-detail-edit" onclick="openEditModal(${idx})">수정</span>
           </div>
-          <span class="cal-detail-edit" onclick="openEditModal(${idx})">수정</span>
+          ${subHtml}
         </div>`;
     }).join('');
 
@@ -2785,9 +3099,12 @@
       }
     } catch(e) { console.error('상태 불러오기 실패:', e); }
     renderRecentMeetings();
-    renderTaskViews(); // allEvents 기반 오늘/이번주 일정은 항상 렌더
+    renderTaskViews();
     renderCalendar();
     renderUpcoming();
+    // 초기 진입 페이지를 캘린더로 설정
+    openMenu('dashboard');
+    document.getElementById('menu-dashboard')?.classList.add('active');
   })();
 
   // ══ 회의록 입력 — PPT 참고 선택 ══
@@ -3169,10 +3486,12 @@
 
   function setRecStatus(state, text) {
     const dot = document.getElementById('recStatusDot');
-    dot.className = 'rec-status-dot ' + state;
-    document.getElementById('recStatusText').textContent = text;
+    if (dot) { dot.className = 'rec-status-dot ' + state; }
+    const stTxt = document.getElementById('recStatusText');
+    if (stTxt) stTxt.textContent = text;
     const btn = document.getElementById('recBtn');
-    btn.className = 'rec-btn ' + state;
+    if (btn) btn.className = 'rec-btn ' + state;
+    syncRecStatus();
   }
 
   function startTimer() {
@@ -3196,13 +3515,21 @@
   }
 
   function updateTranscriptDisplay() {
-    const el = document.getElementById('recTranscript');
-    const ph = document.getElementById('transcriptPlaceholder');
-    const full = recFinalText + (recInterim ? `<span class="rec-interim">${recInterim}</span>` : '');
-    el.innerHTML = full;
-    ph.style.display = (recFinalText || recInterim) ? 'none' : 'block';
-    el.scrollTop = el.scrollHeight;
-    document.getElementById('btnUseTranscript').disabled = !recFinalText.trim();
+    const ta = document.getElementById('transcriptInput');
+    ta.value = recFinalText + (recInterim ? ` ${recInterim}` : '');
+    ta.scrollTop = ta.scrollHeight;
+    syncRecStatus();
+  }
+
+  function syncRecStatus() {
+    const dot1 = document.getElementById('recStatusDot');
+    const dot2 = document.getElementById('recStatusDot2');
+    const txt2 = document.getElementById('recStatusText2');
+    const hasText = !!document.getElementById('transcriptInput').value.trim();
+    if (dot2) {
+      dot2.className = 'rec-status-dot ' + (recRecording ? 'rec' : hasText ? 'done' : 'idle');
+      txt2.textContent = recRecording ? '녹음 중...' : hasText ? '텍스트 입력됨' : '대기 중';
+    }
   }
 
   function toggleRecording() {
@@ -3435,15 +3762,6 @@
     updateTimerDisplay();
     updateTranscriptDisplay();
     setRecStatus('idle', '마이크 버튼을 눌러 녹음을 시작하세요');
-  }
-
-  function useTranscriptAsMeeting() {
-    const text = recFinalText.trim();
-    if (!text) { showToast('변환된 텍스트가 없습니다.'); return; }
-    document.getElementById('transcriptInput').value = text;
-    openMenu('input');
-    openPage('input');
-    showToast('✅ 회의록 입력창으로 이동했습니다.');
   }
 </script>
 </body>
