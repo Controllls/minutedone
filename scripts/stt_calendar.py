@@ -26,7 +26,7 @@ Google Calendar 사전 준비:
 import os
 import json
 import sys
-from datetime import date
+from datetime import date, timedelta
 from dotenv import load_dotenv
 
 load_dotenv(dotenv_path="config/.env")
@@ -37,8 +37,44 @@ import rules  # 회사별 추출 규칙
 
 
 # ============================================================
+# 날짜 헬퍼
+# ============================================================
+
+_WEEKDAYS_KR = ["월", "화", "수", "목", "금", "토", "일"]
+
+
+def _today_str() -> str:
+    """오늘 날짜를 'YYYY-MM-DD (요일)' 형식으로 반환합니다."""
+    d = date.today()
+    return f"{d.strftime('%Y-%m-%d')} ({_WEEKDAYS_KR[d.weekday()]})"
+
+
+# ============================================================
 # 프롬프트 템플릿
 # ============================================================
+
+_DATE_SYSTEM = (
+    "너는 회의록에서 날짜 표현을 찾아 실제 날짜로 변환하는 어시스턴트야. "
+    "반드시 JSON 객체만 출력하고, 코드블록을 절대 사용하지 마."
+)
+
+_DATE_PROMPT = """\
+오늘: {today}
+
+아래 회의록에서 언급된 모든 날짜/기간 표현을 찾아 실제 날짜(YYYY-MM-DD)로 변환해줘.
+
+## 출력 형식
+{{
+  "표현": "YYYY-MM-DD"
+}}
+
+- "이번 주 금요일", "다음 주 월요일", "내일", "이번 주 안에" 등 → 오늘({today}) 기준으로 계산
+- 날짜 언급이 없으면 빈 객체 {{}} 를 반환해.
+- 코드블록 없이 순수 JSON만 출력해.
+
+## 회의록
+{transcript}
+"""
 
 _CALENDAR_SYSTEM = (
     "너는 회의록에서 업무를 빠짐없이 추출하는 어시스턴트야. "
@@ -47,14 +83,14 @@ _CALENDAR_SYSTEM = (
 
 _CALENDAR_PROMPT = """\
 오늘: {today}
-
+{date_map_section}
 아래 회의록에서 언급된 업무를 모두 추출해서 JSON 배열로 반환해.
 계층 구분 없이 업무를 나열하기만 하면 돼.
 
 각 항목의 필드:
 - "task": 업무 내용 (구체적으로)
 - "due_date": YYYY-MM-DD 또는 "TBD"
-  - 날짜 특정 가능: "이번 주 금요일", "다음 주 월요일", "3월 27일", "내일", "이번 주 안에" → 오늘({today}) 기준으로 YYYY-MM-DD 변환
+  - 날짜 특정 가능: 위의 날짜 사전 변환 결과를 우선 사용하고, 없으면 오늘({today}) 기준으로 계산
   - TBD: "나중에", "추후", "검토 예정", 날짜 언급 없음
 - "assignee": 담당자, 모르면 "미정"
 - "context": 이 업무가 나온 배경 한 줄
@@ -116,33 +152,71 @@ _INSIGHT_PROMPT = """\
 # Test 1 — 일정 & 액션 아이템 추출
 # ============================================================
 
-def _parse_json(raw: str) -> list:
-    """LLM 응답에서 JSON 배열을 파싱합니다. 코드블록이 있으면 제거합니다."""
+def _strip_codeblock(raw: str) -> str:
+    """LLM 응답에서 코드블록 마커(```json ... ```)를 제거합니다."""
     raw = raw.strip()
     if raw.startswith("```"):
         parts = raw.split("```")
         raw = parts[1] if len(parts) > 1 else raw
         if raw.startswith("json"):
             raw = raw[4:]
-    return json.loads(raw.strip())
+    return raw.strip()
+
+
+def _parse_json(raw: str) -> list:
+    """LLM 응답에서 JSON 배열을 파싱합니다. 코드블록이 있으면 제거합니다."""
+    return json.loads(_strip_codeblock(raw))
+
+
+def _extract_date_map(transcript: str) -> dict:
+    """회의록에서 날짜 표현 → YYYY-MM-DD 매핑을 추출합니다 (Step 0)."""
+    today = _today_str()
+    raw = llm.chat(
+        _DATE_PROMPT.format(today=today, transcript=transcript),
+        system=_DATE_SYSTEM,
+        max_tokens=1000,
+    )
+    try:
+        return json.loads(_strip_codeblock(raw))
+    except Exception:
+        return {}
+
+
+def _format_date_map(date_map: dict) -> str:
+    """날짜 매핑 dict를 프롬프트 주입용 문자열로 변환합니다."""
+    if not date_map:
+        return ""
+    lines = "\n".join(f'- "{k}" → {v}' for k, v in date_map.items())
+    return f"\n## 날짜 사전 변환 결과 (반드시 이 날짜 사용)\n{lines}\n"
 
 
 def extract_calendar_events(transcript: str, company: str = None, ppt_context: str = None) -> list[dict]:
     """
-    STT 텍스트에서 일정/액션 아이템을 2단계로 추출합니다.
+    STT 텍스트에서 일정/액션 아이템을 3단계로 추출합니다.
+    0단계: 날짜 표현 사전 추출
     1단계: 업무 나열 (계층 구분 없이)
     2단계: parent-sub 관계 재배치
     company: 회사별 규칙 파일 이름 (config/rules/{company}.md). None이면 환경변수 COMPANY_RULES 사용.
     ppt_context: PPT/문서에서 추출한 텍스트. 프롬프트에 참고 자료로 주입됩니다.
     """
-    today = date.today().strftime("%Y-%m-%d")
+    today = _today_str()
     rule_text = rules.load(company)
     rules_section = f"\n\n## 팀 규칙 (반드시 준수)\n\n{rule_text}" if rule_text else ""
     ppt_section = f"\n## 참고 문서 (PPT/자료)\n\n아래 문서 내용을 업무 추출 시 참고하세요. 회의록에서 언급된 항목과 연결지어 context를 보완할 수 있습니다.\n\n{ppt_context}" if ppt_context else ""
 
+    # 0단계: 날짜 표현 사전 추출
+    date_map = _extract_date_map(transcript)
+    date_map_section = _format_date_map(date_map)
+
     # 1단계: 업무 나열
     raw1 = llm.chat(
-        _CALENDAR_PROMPT.format(today=today, transcript=transcript, rules_section=rules_section, ppt_section=ppt_section),
+        _CALENDAR_PROMPT.format(
+            today=today,
+            transcript=transcript,
+            rules_section=rules_section,
+            ppt_section=ppt_section,
+            date_map_section=date_map_section,
+        ),
         system=_CALENDAR_SYSTEM,
         max_tokens=10000,
     )
@@ -224,20 +298,14 @@ def classify_tasks(events: list[dict], user_name: str = "전체") -> dict:
     """
     추출된 이벤트 목록을 전체/오늘/담당/완료 뷰로 분류합니다.
     """
-    today = date.today().strftime("%Y-%m-%d")
+    today = _today_str()
     prompt = _TASK_PROMPT.format(
         today=today,
         user_name=user_name,
         events_json=json.dumps(events, ensure_ascii=False, indent=2),
     )
     raw = llm.chat(prompt, system=_TASK_SYSTEM, max_tokens=2048)
-    raw = raw.strip()
-    if raw.startswith("```"):
-        parts = raw.split("```")
-        raw = parts[1] if len(parts) > 1 else raw
-        if raw.startswith("json"):
-            raw = raw[4:]
-    return json.loads(raw.strip())
+    return json.loads(_strip_codeblock(raw))
 
 
 # ============================================================

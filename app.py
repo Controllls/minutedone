@@ -238,10 +238,18 @@ def stt():
             buf = io.BytesIO(audio_bytes)
             buf.name = filename
 
+        _WHISPER_PROMPT = (
+            "DF 기획팀: 김동석 프로, 김현수 프로, 남예서 프로, 옥영빈 프로, 김희주 프로, 이하은 팀장, 유형욱 프로, 이현주 이사님. "
+            "DF 디자인팀: 김득환 프로, 강수빈 프로, 김민경 프로, 이주희 프로, 이주환 이사님. "
+            "DF 모션팀: 유근주 실장님, 김유미 프로, 최유정 프로. "
+            "IKEA: 노미소님, 세레나님, 수아님, 제니님, 인국님, 티프님, 신디님, 루카님, 크리스틴님. "
+            "협력사: 보배 카피님, 은선 카피님, 다영 차장님, 미소 대리님."
+        )
         transcript = client.audio.transcriptions.create(
             model="whisper-1",
             file=buf,
             language="ko",
+            prompt=_WHISPER_PROMPT,
         )
         return jsonify({"success": True, "text": transcript.text})
     except Exception as e:
@@ -602,8 +610,15 @@ def gdrive_transcribe(file_id):
 
         from openai import OpenAI
         client = OpenAI(api_key=api_key)
+        _WHISPER_PROMPT = (
+            "DF 기획팀: 김동석 프로, 김현수 프로, 남예서 프로, 옥영빈 프로, 김희주 프로, 이하은 팀장, 유형욱 프로, 이현주 이사님. "
+            "DF 디자인팀: 김득환 프로, 강수빈 프로, 김민경 프로, 이주희 프로, 이주환 이사님. "
+            "DF 모션팀: 유근주 실장님, 김유미 프로, 최유정 프로. "
+            "IKEA: 노미소님, 세레나님, 수아님, 제니님, 인국님, 티프님, 신디님, 루카님, 크리스틴님. "
+            "협력사: 보배 카피님, 은선 카피님, 다영 차장님, 미소 대리님."
+        )
         transcript = client.audio.transcriptions.create(
-            model="whisper-1", file=(name, buf, mime), language="ko"
+            model="whisper-1", file=(name, buf, mime), language="ko", prompt=_WHISPER_PROMPT
         )
         return jsonify({"success": True, "text": transcript.text, "filename": name})
     except Exception as e:
