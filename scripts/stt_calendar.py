@@ -42,11 +42,60 @@ import rules  # 회사별 추출 규칙
 
 _WEEKDAYS_KR = ["월", "화", "수", "목", "금", "토", "일"]
 
+# 현재 사용자 (로그인 없는 환경에서 고정 지정)
+CURRENT_USER = "최종근 프로"
 
-def _today_str() -> str:
-    """오늘 날짜를 'YYYY-MM-DD (요일)' 형식으로 반환합니다."""
-    d = date.today()
+
+def _today_str(base_date: str = None) -> str:
+    """날짜를 'YYYY-MM-DD (요일)' 형식으로 반환합니다. base_date가 없으면 오늘 날짜 사용."""
+    if base_date:
+        d = date.fromisoformat(base_date)
+    else:
+        d = date.today()
     return f"{d.strftime('%Y-%m-%d')} ({_WEEKDAYS_KR[d.weekday()]})"
+
+
+def _build_date_reference(base_date: str = None) -> str:
+    """
+    기준일 기준 이번 주·다음 주 날짜표를 Python으로 미리 계산해 반환합니다.
+    LLM이 날짜를 직접 계산하지 않고 이 표를 참조하도록 합니다.
+    한국 기준: 한 주는 월요일 시작.
+    """
+    d = date.fromisoformat(base_date) if base_date else date.today()
+    # 이번 주 월요일
+    this_mon = d - timedelta(days=d.weekday())
+
+    def week_table(monday, label):
+        lines = []
+        for i, w in enumerate(_WEEKDAYS_KR):
+            day = monday + timedelta(days=i)
+            lines.append(f"  {w}요일 ({label}): {day.strftime('%Y-%m-%d')}")
+        return "\n".join(lines)
+
+    this_week = week_table(this_mon, "이번 주")
+    next_week = week_table(this_mon + timedelta(weeks=1), "다음 주")
+
+    return f"""\
+## 날짜 기준표 (LLM 계산 금지 — 반드시 이 표만 참조)
+기준일(회의일): {d.strftime('%Y-%m-%d')} ({_WEEKDAYS_KR[d.weekday()]})
+내일: {(d + timedelta(days=1)).strftime('%Y-%m-%d')}
+모레: {(d + timedelta(days=2)).strftime('%Y-%m-%d')}
+
+이번 주 (월~일):
+{this_week}
+
+다음 주 (월~일):
+{next_week}
+
+## 표현 → 날짜 변환 규칙 (스스로 계산 금지, 반드시 위 표 사용)
+- "오늘", "오늘날", "오늘 중" → 기준일
+- "내일" → 기준일 +1일
+- "모레" → 기준일 +2일
+- "X요일날", "X요일까지", "이번 주 X요일", "X요일" (다음 주 언급 없음) → 이번 주 표에서 X요일 날짜
+  ※ 기준일이 X요일과 같은 요일인 경우(예: 오늘이 월요일이고 "월요일날") → 기준일 자체
+- "다음 주 X요일" → 다음 주 표에서 X요일 날짜
+- "이번 주 안에", "이번 주 내" → 이번 주 금요일
+"""
 
 
 # ============================================================
@@ -59,16 +108,16 @@ _DATE_SYSTEM = (
 )
 
 _DATE_PROMPT = """\
-오늘: {today}
+{date_reference}
 
-아래 회의록에서 언급된 모든 날짜/기간 표현을 찾아 실제 날짜(YYYY-MM-DD)로 변환해줘.
+위 날짜 기준표를 참조해서 아래 회의록의 날짜/기간 표현을 변환해줘.
+스스로 계산하지 말고 반드시 기준표에 있는 날짜를 그대로 사용할 것.
 
 ## 출력 형식
 {{
   "표현": "YYYY-MM-DD"
 }}
 
-- "이번 주 금요일", "다음 주 월요일", "내일", "이번 주 안에" 등 → 오늘({today}) 기준으로 계산
 - 날짜 언급이 없으면 빈 객체 {{}} 를 반환해.
 - 코드블록 없이 순수 JSON만 출력해.
 
@@ -82,18 +131,28 @@ _CALENDAR_SYSTEM = (
 )
 
 _CALENDAR_PROMPT = """\
-오늘: {today}
+{date_reference}
 {date_map_section}
+{contacts_section}
 아래 회의록에서 언급된 업무를 모두 추출해서 JSON 배열로 반환해.
 계층 구분 없이 업무를 나열하기만 하면 돼.
 
 각 항목의 필드:
 - "task": 업무 내용 (구체적으로)
 - "due_date": YYYY-MM-DD 또는 "TBD"
-  - 날짜 특정 가능: 위의 날짜 사전 변환 결과를 우선 사용하고, 없으면 오늘({today}) 기준으로 계산
+  - 위의 날짜 사전 변환 결과에 있으면 그 값을 그대로 사용
+  - 없으면 날짜 기준표에서 직접 찾을 것 (스스로 계산 금지)
   - TBD: "나중에", "추후", "검토 예정", 날짜 언급 없음
-- "assignee": 담당자, 모르면 "미정"
+- "assignee": 담당자. 위 참여자/프로젝트 담당자 섹션에서 이름을 찾아 사용할 것.
+  - STT 오인식으로 이름이 변형될 수 있으므로 발음이 유사한 이름도 섹션과 대조해 교정할 것
+  - 호칭(닉네임)으로 언급된 경우 실명으로 변환할 것 (예: "수아님" → 정수아, "미소님" → 노미소)
+  - 여러 명이 함께 담당하면 쉼표로 구분 (예: "김동석, 김현수")
+  - 특정 담당자를 알 수 없거나 팀 전체 업무이면 "전체"
+  - 섹션에도 없고 문맥으로도 알 수 없으면 "미정"
 - "context": 이 업무가 나온 배경 한 줄
+- "source_quote": 회의록에서 이 업무가 언급된 원문을 그대로 발췌 (1~2문장, 생략 없이)
+- "reason": 이 발언을 업무로 판단한 근거 (왜 액션 아이템인지 1문장으로 설명)
+- "checklist": 이 업무를 완료하기 위해 확인해야 할 액션 아이템 목록 (문자열 배열, 2~4개, 없으면 빈 배열)
 {rules_section}
 
 코드블록 없이 순수 JSON 배열만 출력해.
@@ -122,10 +181,79 @@ _HIERARCHY_PROMPT = """\
 - 완전히 독립된 업무는 sub, parent_task: null
 - parent의 due_date는 소속된 sub 중 가장 늦은 날짜로 맞춰줘
 
-입력 데이터의 모든 필드(task, due_date, assignee, context)를 그대로 유지하면서 두 필드만 추가해.
+입력 데이터의 모든 필드(task, due_date, assignee, context, source_quote, reason, checklist)를 그대로 유지하면서 두 필드만 추가해.
 코드블록 없이 순수 JSON 배열만 출력해.
 
 업무 목록:
+{tasks_json}
+"""
+
+_META_SYSTEM = (
+    "너는 회의록을 분석해서 회의 맥락 정보를 추출하는 어시스턴트야. "
+    "반드시 JSON 객체만 출력하고, 코드블록을 절대 사용하지 마."
+)
+
+_META_PROMPT = """\
+아래 회의록과 추출된 업무 목록을 보고 회의 맥락 정보를 JSON으로 반환해.
+
+{contacts_section}
+
+## 프로젝트 목록 (이 회의가 어느 프로젝트에 해당하는지 추론)
+{projects_list}
+
+## 출력 형식
+{{
+  "inferred_project": "프로젝트명 또는 null",
+  "project_reason": "이 프로젝트라고 판단한 근거 (인물, 키워드, 문맥 등 구체적으로)",
+  "meeting_type": "2인 통화 / 소규모 회의(3~5인) / 대규모 회의(6인+) 중 하나",
+  "estimated_headcount": 추정 참석 인원 수 (숫자),
+  "participants": [
+    {{
+      "name": "실명 (인물 섹션 기준, 없으면 회의록 표현 그대로)",
+      "mentioned_as": "회의록에서 어떻게 불렸는지 (호칭, 닉네임 등)",
+      "evidence": "이 사람이 참석했다고 판단한 근거 (직접 발언, 호명, 업무 할당 등)"
+    }}
+  ],
+  "unresolved": [
+    {{
+      "mentioned": "회의록 원문에서 나온 표현",
+      "best_guess": "가장 유력한 후보 실명",
+      "confidence": "높음 / 보통 / 낮음",
+      "reason": "왜 이 사람이 후보인지 (발음 유사도, 팀/역할 문맥, 2인 구조 추론 등 근거)"
+    }}
+  ]
+}}
+
+## 규칙
+
+### 참석 인원 추론
+- 회의록의 발화 패턴, 호명 수, 응답 구조를 분석해 총 참석 인원을 추정할 것
+- 현재 사용자({current_user})는 항상 포함
+
+### 2인 통화 특칙
+- **추정 인원이 2명이면**: 나({current_user})가 한 명이므로 나머지 1명이 상대방으로 특정됨
+- 이 경우 unresolved의 표현들("작가님", "수환님" 등)은 모두 동일 인물(통화 상대방)을 가리킬 가능성이 높음
+- best_guess는 인물 섹션에서 역할·문맥이 가장 일치하는 1명을 지명하고, reason에 "2인 통화 구조상 상대방으로 특정" 명시
+
+### 3인 이상 회의 특칙
+- 발화 순서, 맥락, 업무 할당 방향으로 각 표현이 누구를 지칭하는지 추론
+- 같은 맥락에서 반복 등장하는 표현은 동일인으로 묶어서 판단
+
+### best_guess 공통 규칙
+- **절대 null이 되어선 안 됨** — 인물 섹션 전체에서 발음·음절·역할 유사도가 가장 높은 인물을 반드시 1명 지명
+- 인물 섹션에도 없으면 회의록 문맥에서 역할을 추론해 기재 (예: "외부 작가 (미등록 인물)")
+- confidence: 높음(거의 확실) / 보통(가능성 높음) / 낮음(추정에 불과)
+
+### participants
+- 회의록에서 발언했거나 이름이 언급된 모든 인물
+- **{current_user}는 이 회의를 기록한 현재 사용자이므로 반드시 포함** (evidence: "회의 기록자")
+
+코드블록 없이 순수 JSON만 출력
+
+## 회의록
+{transcript}
+
+## 추출된 업무 (assignee 참고용)
 {tasks_json}
 """
 
@@ -168,11 +296,11 @@ def _parse_json(raw: str) -> list:
     return json.loads(_strip_codeblock(raw))
 
 
-def _extract_date_map(transcript: str) -> dict:
+def _extract_date_map(transcript: str, meeting_date: str = None) -> dict:
     """회의록에서 날짜 표현 → YYYY-MM-DD 매핑을 추출합니다 (Step 0)."""
-    today = _today_str()
+    date_reference = _build_date_reference(meeting_date)
     raw = llm.chat(
-        _DATE_PROMPT.format(today=today, transcript=transcript),
+        _DATE_PROMPT.format(date_reference=date_reference, transcript=transcript),
         system=_DATE_SYSTEM,
         max_tokens=1000,
     )
@@ -190,7 +318,43 @@ def _format_date_map(date_map: dict) -> str:
     return f"\n## 날짜 사전 변환 결과 (반드시 이 날짜 사용)\n{lines}\n"
 
 
-def extract_calendar_events(transcript: str, company: str = None, ppt_context: str = None) -> list[dict]:
+def _extract_meeting_meta(transcript: str, tasks: list, contacts_context: str = None, available_projects: list = None) -> dict:
+    """회의 맥락 메타정보(추론 프로젝트, 참석자, 미정 담당자 추측)를 추출합니다 (Step 3)."""
+    contacts_section = contacts_context.strip() if contacts_context and contacts_context.strip() else "인물 정보 없음"
+    if available_projects:
+        projects_list = "\n".join(f"- {p['name']}" + (f" (클라이언트: {p['client']})" if p.get('client') else "") for p in available_projects)
+    else:
+        projects_list = "등록된 프로젝트 없음"
+    raw = llm.chat(
+        _META_PROMPT.format(
+            contacts_section=contacts_section,
+            projects_list=projects_list,
+            current_user=CURRENT_USER,
+            transcript=transcript,
+            tasks_json=json.dumps(tasks, ensure_ascii=False, indent=2),
+        ),
+        system=_META_SYSTEM,
+        max_tokens=2000,
+    )
+    try:
+        meta = json.loads(_strip_codeblock(raw))
+    except Exception:
+        meta = {}
+
+    # CURRENT_USER가 participants에 없으면 강제 추가
+    participants = meta.get("participants") or []
+    if not any(p.get("name") == CURRENT_USER for p in participants):
+        participants.insert(0, {
+            "name": CURRENT_USER,
+            "mentioned_as": CURRENT_USER,
+            "evidence": "회의 기록자 (현재 사용자)"
+        })
+        meta["participants"] = participants
+
+    return meta
+
+
+def extract_calendar_events(transcript: str, company: str = None, ppt_context: str = None, meeting_date: str = None, contacts_context: str = None, available_projects: list = None) -> tuple[list[dict], dict]:
     """
     STT 텍스트에서 일정/액션 아이템을 3단계로 추출합니다.
     0단계: 날짜 표현 사전 추출
@@ -198,22 +362,30 @@ def extract_calendar_events(transcript: str, company: str = None, ppt_context: s
     2단계: parent-sub 관계 재배치
     company: 회사별 규칙 파일 이름 (config/rules/{company}.md). None이면 환경변수 COMPANY_RULES 사용.
     ppt_context: PPT/문서에서 추출한 텍스트. 프롬프트에 참고 자료로 주입됩니다.
+    meeting_date: 회의 날짜 (YYYY-MM-DD). None이면 오늘 날짜 사용.
+    contacts_context: 인물 DB에서 생성한 참여자 정보 섹션.
+    available_projects: 프로젝트 목록 (메타 추론용).
+    Returns: (tasks, meta) 튜플
     """
-    today = _today_str()
+    date_reference = _build_date_reference(meeting_date)
+    print(f"[DEBUG] meeting_date={meeting_date!r}")
     rule_text = rules.load(company)
     rules_section = f"\n\n## 팀 규칙 (반드시 준수)\n\n{rule_text}" if rule_text else ""
+    contacts_section = f"\n\n{contacts_context.strip()}" if contacts_context and contacts_context.strip() else ""
     ppt_section = f"\n## 참고 문서 (PPT/자료)\n\n아래 문서 내용을 업무 추출 시 참고하세요. 회의록에서 언급된 항목과 연결지어 context를 보완할 수 있습니다.\n\n{ppt_context}" if ppt_context else ""
 
     # 0단계: 날짜 표현 사전 추출
-    date_map = _extract_date_map(transcript)
+    date_map = _extract_date_map(transcript, meeting_date)
+    print(f"[DEBUG] date_map={date_map}")
     date_map_section = _format_date_map(date_map)
 
     # 1단계: 업무 나열
     raw1 = llm.chat(
         _CALENDAR_PROMPT.format(
-            today=today,
+            date_reference=date_reference,
             transcript=transcript,
             rules_section=rules_section,
+            contacts_section=contacts_section,
             ppt_section=ppt_section,
             date_map_section=date_map_section,
         ),
@@ -231,7 +403,12 @@ def extract_calendar_events(transcript: str, company: str = None, ppt_context: s
         system=_HIERARCHY_SYSTEM,
         max_tokens=10000,
     )
-    return _parse_json(raw2)
+    final_tasks = _parse_json(raw2)
+
+    # 3단계: 회의 메타 추출 (프로젝트 추론, 참석자, 미정 담당자 추측)
+    meta = _extract_meeting_meta(transcript, final_tasks, contacts_context, available_projects)
+
+    return final_tasks, meta
 
 
 # ============================================================
@@ -408,9 +585,11 @@ def run(
 
     # ── Test 1 ──────────────────────────────────────────────
     print("\n[Test 1] 일정 & 액션 아이템 추출 중...")
-    events = extract_calendar_events(transcript)
+    events, meta = extract_calendar_events(transcript)
     print(f"  → {len(events)}개 항목 추출됨\n")
     print(json.dumps(events, ensure_ascii=False, indent=2))
+    print("\n[회의 메타]")
+    print(json.dumps(meta, ensure_ascii=False, indent=2))
 
     if not skip_calendar:
         print("\n  [캘린더 등록 중...]")

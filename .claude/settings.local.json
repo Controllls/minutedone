@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(pip install:*)"
+      "Bash(pip install:*)",
+      "Read(//c/Users/whdrm/AppData/Roaming/Claude/local-agent-mode-sessions/skills-plugin/6fbf8088-e8e6-41ef-bc6f-e3c0f543d90f/1103fa15-0a4f-4863-a73e-1dd249630e44/skills/docx/**)",
+      "Bash(python -c \":*)",
+      "Bash(python scripts/office/pack.py unpacked/ \"E:/자소서/자소서_소스_정리_최종근.docx\" --original \"E:/자소서/자소서_소스_정리_최종근.docx\")"
     ]
   }
 }

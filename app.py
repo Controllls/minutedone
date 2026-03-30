@@ -7,8 +7,11 @@ app.py — 티로 회의록 웹 인터페이스
 import os
 import sys
 import json
+import time
+import uuid
+import threading
 import glob as glob_module
-from flask import Flask, render_template, request, jsonify, redirect
+from flask import Flask, render_template, request, jsonify, redirect, Response, stream_with_context
 from dotenv import load_dotenv
 
 # localhost HTTP에서 OAuth 허용
@@ -42,12 +45,16 @@ def run_calendar():
     if not transcript:
         return jsonify({"error": "녹취록 텍스트가 없습니다."}), 400
 
-    company     = data.get("company", "").strip() or None
-    ppt_context = data.get("ppt_context", "").strip() or None
+    company      = data.get("company", "").strip() or None
+    ppt_context  = data.get("ppt_context", "").strip() or None
+    meeting_date = data.get("meeting_date", "").strip() or None
+    project_id   = data.get("project_id") or None
+    contacts_ctx = db.build_project_context(int(project_id)) if project_id else db.build_contacts_prompt()
+    all_projects = db.get_projects()
     try:
-        events = stt_calendar.extract_calendar_events(transcript, company=company, ppt_context=ppt_context)
+        events, meta = stt_calendar.extract_calendar_events(transcript, company=company, ppt_context=ppt_context, meeting_date=meeting_date, contacts_context=contacts_ctx, available_projects=all_projects)
         created = stt_calendar.create_notion_calendar_events(events)
-        return jsonify({"success": True, "events": events, "created": len(created), "usage": llm_module.get_usage()})
+        return jsonify({"success": True, "events": events, "meta": meta, "created": len(created), "usage": llm_module.get_usage()})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
@@ -60,12 +67,16 @@ def extract_only():
     if not transcript:
         return jsonify({"error": "녹취록 텍스트가 없습니다."}), 400
 
-    company     = data.get("company", "").strip() or None
-    ppt_context = data.get("ppt_context", "").strip() or None
+    company      = data.get("company", "").strip() or None
+    ppt_context  = data.get("ppt_context", "").strip() or None
+    meeting_date = data.get("meeting_date", "").strip() or None
+    project_id   = data.get("project_id") or None
+    contacts_ctx = db.build_project_context(int(project_id)) if project_id else db.build_contacts_prompt()
+    all_projects = db.get_projects()
     try:
-        events   = stt_calendar.extract_calendar_events(transcript, company=company, ppt_context=ppt_context)
+        events, meta = stt_calendar.extract_calendar_events(transcript, company=company, ppt_context=ppt_context, meeting_date=meeting_date, contacts_context=contacts_ctx, available_projects=all_projects)
         insights = stt_calendar.extract_insights(transcript)
-        return jsonify({"success": True, "events": events, "insights": insights, "usage": llm_module.get_usage()})
+        return jsonify({"success": True, "events": events, "meta": meta, "insights": insights, "usage": llm_module.get_usage()})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
@@ -238,18 +249,13 @@ def stt():
             buf = io.BytesIO(audio_bytes)
             buf.name = filename
 
-        _WHISPER_PROMPT = (
-            "DF 기획팀: 김동석 프로, 김현수 프로, 남예서 프로, 옥영빈 프로, 김희주 프로, 이하은 팀장, 유형욱 프로, 이현주 이사님. "
-            "DF 디자인팀: 김득환 프로, 강수빈 프로, 김민경 프로, 이주희 프로, 이주환 이사님. "
-            "DF 모션팀: 유근주 실장님, 김유미 프로, 최유정 프로. "
-            "IKEA: 노미소님, 세레나님, 수아님, 제니님, 인국님, 티프님, 신디님, 루카님, 크리스틴님. "
-            "협력사: 보배 카피님, 은선 카피님, 다영 차장님, 미소 대리님."
-        )
+        _whisper_names = db.build_whisper_names()
+        _WHISPER_PROMPT = f"참여자: {_whisper_names}" if _whisper_names else ""
         transcript = client.audio.transcriptions.create(
             model="whisper-1",
             file=buf,
             language="ko",
-            prompt=_WHISPER_PROMPT,
+            prompt=_WHISPER_PROMPT or None,
         )
         return jsonify({"success": True, "text": transcript.text})
     except Exception as e:
@@ -610,15 +616,11 @@ def gdrive_transcribe(file_id):
 
         from openai import OpenAI
         client = OpenAI(api_key=api_key)
-        _WHISPER_PROMPT = (
-            "DF 기획팀: 김동석 프로, 김현수 프로, 남예서 프로, 옥영빈 프로, 김희주 프로, 이하은 팀장, 유형욱 프로, 이현주 이사님. "
-            "DF 디자인팀: 김득환 프로, 강수빈 프로, 김민경 프로, 이주희 프로, 이주환 이사님. "
-            "DF 모션팀: 유근주 실장님, 김유미 프로, 최유정 프로. "
-            "IKEA: 노미소님, 세레나님, 수아님, 제니님, 인국님, 티프님, 신디님, 루카님, 크리스틴님. "
-            "협력사: 보배 카피님, 은선 카피님, 다영 차장님, 미소 대리님."
-        )
+        _whisper_names = db.build_whisper_names()
+        _WHISPER_PROMPT = f"참여자: {_whisper_names}" if _whisper_names else ""
         transcript = client.audio.transcriptions.create(
-            model="whisper-1", file=(name, buf, mime), language="ko", prompt=_WHISPER_PROMPT
+            model="whisper-1", file=(name, buf, mime), language="ko",
+            prompt=_WHISPER_PROMPT or None,
         )
         return jsonify({"success": True, "text": transcript.text, "filename": name})
     except Exception as e:
@@ -642,6 +644,52 @@ _RULES_DIR = os.path.join(os.path.dirname(__file__), "config", "rules")
 def _safe_rule_name(name):
     """파일 이름 경로 traversal 방지"""
     return "/" not in name and ".." not in name and name.endswith(".md")
+
+
+# ── 프로젝트 API ──
+
+@app.route("/api/projects", methods=["GET"])
+def projects_list():
+    return jsonify(db.get_projects())
+
+@app.route("/api/projects", methods=["POST"])
+def projects_upsert():
+    data = request.get_json()
+    pid = db.upsert_project(data)
+    return jsonify({"success": True, "id": pid})
+
+@app.route("/api/projects/<int:pid>", methods=["DELETE"])
+def projects_delete(pid):
+    db.delete_project(pid)
+    return jsonify({"success": True})
+
+@app.route("/api/projects/<int:pid>/members", methods=["GET"])
+def project_members_get(pid):
+    return jsonify(db.get_project_members(pid))
+
+@app.route("/api/projects/<int:pid>/members", methods=["POST"])
+def project_members_set(pid):
+    members = request.get_json()
+    db.set_project_members(pid, members)
+    return jsonify({"success": True})
+
+
+# ── 인물 DB API ──
+
+@app.route("/api/contacts", methods=["GET"])
+def contacts_list():
+    return jsonify(db.get_contacts())
+
+@app.route("/api/contacts", methods=["POST"])
+def contacts_upsert():
+    data = request.get_json()
+    cid = db.upsert_contact(data)
+    return jsonify({"success": True, "id": cid})
+
+@app.route("/api/contacts/<int:cid>", methods=["DELETE"])
+def contacts_delete(cid):
+    db.delete_contact(cid)
+    return jsonify({"success": True})
 
 
 @app.route("/api/admin/rules", methods=["GET"])
@@ -681,6 +729,130 @@ def admin_delete_rule(name):
     if os.path.exists(path):
         os.remove(path)
     return jsonify({"ok": True})
+
+
+# ============================================================
+# crewAI 에이전트
+# ============================================================
+
+_agent_jobs: dict = {}  # job_id -> {status, logs, result}
+
+try:
+    import importlib.util as _ilu
+    _spec = _ilu.spec_from_file_location("crew_agent", os.path.join("scripts", "crew_agent.py"))
+    _crew_agent_mod = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(_crew_agent_mod)
+    _CREW_AVAILABLE = True
+except Exception:
+    _crew_agent_mod = None
+    _CREW_AVAILABLE = False
+
+
+@app.route("/api/agent/run", methods=["POST"])
+def agent_run():
+    if not _CREW_AVAILABLE:
+        return jsonify({"error": "crewai 패키지가 설치되지 않았습니다. pip install crewai"}), 500
+
+    data = request.get_json()
+    transcript = (data.get("transcript") or "").strip()
+    if not transcript:
+        return jsonify({"error": "회의록 텍스트가 없습니다."}), 400
+
+    project_id = data.get("project_id") or None
+    contacts_ctx = db.build_project_context(int(project_id)) if project_id else db.build_contacts_prompt()
+
+    job_id = str(uuid.uuid4())
+    job = {"status": "running", "logs": [], "result": None}
+    _agent_jobs[job_id] = job
+
+    def _run():
+        def log_fn(line):
+            job["logs"].append(line)
+        result = _crew_agent_mod.run_crew(transcript, contacts_context=contacts_ctx, log_fn=log_fn)
+        job["result"] = result
+        job["status"] = result.get("status", "done")
+
+    threading.Thread(target=_run, daemon=True).start()
+    return jsonify({"job_id": job_id})
+
+
+@app.route("/api/agent/stream")
+def agent_stream():
+    job_id = request.args.get("job_id", "")
+    job = _agent_jobs.get(job_id)
+    if not job:
+        return Response("data: ERROR: job not found\n\n", mimetype="text/event-stream")
+
+    def generate():
+        idx = 0
+        while True:
+            logs = job["logs"]
+            while idx < len(logs):
+                line = logs[idx].replace("\n", " ")
+                yield f"data: {line}\n\n"
+                idx += 1
+            if job["status"] in ("done", "error"):
+                result = job.get("result") or {}
+                yield f"data: __DONE__{json.dumps(result, ensure_ascii=False)}\n\n"
+                break
+            time.sleep(0.3)
+
+    return Response(stream_with_context(generate()), mimetype="text/event-stream")
+
+
+@app.route("/api/agent/status")
+def agent_status():
+    job_id = request.args.get("job_id", "")
+    job = _agent_jobs.get(job_id)
+    if not job:
+        return jsonify({"error": "job not found"}), 404
+    return jsonify({"status": job["status"], "log_count": len(job["logs"]), "result": job.get("result")})
+
+
+@app.route("/api/agent/history")
+def agent_history():
+    runs = db.get_agent_runs(limit=100)
+    return jsonify(runs)
+
+
+@app.route("/api/agent/session/<session_id>")
+def agent_session(session_id):
+    return jsonify(db.get_session_runs(session_id))
+
+
+@app.route("/api/agent/memory")
+def agent_memory():
+    agent_name = request.args.get("agent", "")
+    if agent_name:
+        return jsonify(db.get_agent_memory(agent_name))
+    # 전체 에이전트 메모리 요약
+    with db._conn() as con:
+        rows = con.execute(
+            "SELECT agent_name, COUNT(*) as cnt FROM agent_memory GROUP BY agent_name"
+        ).fetchall()
+    return jsonify([dict(r) for r in rows])
+
+
+@app.route("/api/agent/memory", methods=["POST"])
+def agent_memory_save():
+    data = request.get_json()
+    db.upsert_agent_memory(
+        data["agent_name"], data["memory_type"],
+        data["key"], data["value"],
+        float(data.get("confidence", 0.5))
+    )
+    return jsonify({"ok": True})
+
+
+@app.route("/api/documents")
+def get_documents():
+    project_id = request.args.get("project_id")
+    return jsonify(db.get_documents(int(project_id) if project_id else None))
+
+
+@app.route("/api/messages")
+def get_messages():
+    return jsonify(db.get_messages())
 
 
 # ============================================================

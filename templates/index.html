@@ -205,42 +205,208 @@
       margin: 0; white-space: pre-wrap; word-break: break-all;
     }
 
-    /* parent 그룹 */
-    .event-group { margin-bottom: 16px; }
+    /* ── 추출 결과 보고서 레이아웃 ── */
+    #page-extracted { max-width: 100%; }
+    .event-group { margin-bottom: 20px; }
+
+    /* ── 회의 메타 카드 ── */
+    /* ── 멀티 에이전트 페이지 ── */
+    .agent-layout { display: flex; flex-direction: column; gap: 20px; max-width: 900px; }
+    .agent-input-card { background:#fff; border:1.5px solid #e8e8e4; border-radius:12px; padding:20px; }
+    .agent-input-card textarea {
+      width:100%; height:160px; resize:vertical;
+      border:1px solid #e0e0e0; border-radius:8px;
+      padding:10px 12px; font-size:13px; font-family:inherit;
+      line-height:1.6; outline:none;
+    }
+    .agent-input-card textarea:focus { border-color:#7986cb; }
+    .agent-controls { display:flex; gap:10px; align-items:center; margin-top:12px; flex-wrap:wrap; }
+    .agent-terminal-wrap {
+      background:#0d1117; border-radius:12px; overflow:hidden;
+      border:1.5px solid #30363d;
+    }
+    .agent-terminal-header {
+      background:#161b22; padding:10px 16px;
+      display:flex; align-items:center; justify-content:space-between;
+      border-bottom:1px solid #30363d;
+    }
+    .agent-terminal-title { font-size:12px; font-weight:700; color:#8b949e; letter-spacing:.5px; }
+    .agent-status-dot {
+      width:8px; height:8px; border-radius:50%; background:#30363d;
+      display:inline-block; margin-right:6px;
+    }
+    .agent-status-dot.running { background:#f0883e; animation: blink 1s infinite; }
+    .agent-status-dot.done    { background:#3fb950; animation: none; }
+    .agent-status-dot.error   { background:#f85149; animation: none; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .agent-terminal-log {
+      padding:14px 16px; height:420px; overflow-y:auto;
+      font-family:'Cascadia Code','Fira Code','Consolas',monospace;
+      font-size:12px; line-height:1.7; color:#c9d1d9;
+    }
+    .agent-terminal-log .log-line { white-space:pre-wrap; word-break:break-all; }
+    .agent-terminal-log .log-line.dim { color:#484f58; }
+    .agent-terminal-log .log-line.hi  { color:#79c0ff; }
+    .agent-terminal-log .log-line.ok  { color:#3fb950; }
+    .agent-terminal-log .log-line.err { color:#f85149; }
+    .agent-result-card {
+      background:#fff; border:1.5px solid #b2dfdb; border-radius:12px; padding:20px;
+      display:none;
+    }
+    .agent-result-card.visible { display:block; }
+
+    .meeting-meta-card {
+      background: #fff; border: 1.5px solid #b2dfdb;
+      border-radius: 12px; overflow: hidden; margin-bottom: 24px;
+    }
+    .mmc-header {
+      background: #e0f2f1; padding: 12px 20px;
+      display: flex; align-items: center; gap: 10px;
+      border-bottom: 1.5px solid #b2dfdb;
+    }
+    .mmc-header-title { font-size: 12px; font-weight: 800; color: #00695c; letter-spacing: .4px; text-transform: uppercase; }
+    .mmc-body { padding: 0; }
+    .mmc-section { padding: 12px 20px; border-bottom: 1px solid #f0f0ec; }
+    .mmc-section:last-child { border-bottom: none; }
+    .mmc-section-title { font-size: 10.5px; font-weight: 700; color: #aaa; letter-spacing: .4px; text-transform: uppercase; margin-bottom: 8px; }
+    .mmc-project-name { font-size: 15px; font-weight: 700; color: #1a1a1a; }
+    .mmc-reason { font-size: 12.5px; color: #555; margin-top: 4px; line-height: 1.5; }
+    .mmc-participants { display: flex; flex-direction: column; gap: 8px; }
+    .mmc-person { display: flex; flex-direction: column; gap: 2px; }
+    .mmc-person-name { font-size: 13px; font-weight: 700; color: #1a1a1a; }
+    .mmc-person-meta { font-size: 11.5px; color: #777; }
+    .mmc-person-evidence { font-size: 11.5px; color: #555; }
+    .mmc-unresolved { display: flex; flex-direction: column; gap: 10px; }
+    .mmc-unresolved-item { background: #fff8e1; border: 1px solid #ffe082; border-radius: 8px; padding: 10px 14px; }
+    .mmc-unresolved-mentioned { font-size: 12px; color: #888; }
+    .mmc-unresolved-guess { font-size: 13px; font-weight: 700; color: #e65100; margin-top: 3px; }
+    .mmc-unresolved-reason { font-size: 11.5px; color: #666; margin-top: 3px; }
+
+    /* parent 보고서 카드 */
     .event-card-parent {
       background: #fff; border: 1.5px solid #c5cae9;
-      border-radius: 10px; padding: 13px 16px; margin-bottom: 6px;
+      border-radius: 12px; overflow: hidden;
     }
-    .event-card-parent .task-name {
-      font-size: 13px; font-weight: 700; margin-bottom: 6px; color: #1a1a1a;
+    .ecp-header {
+      background: #e8eaf6; padding: 14px 20px;
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+      border-bottom: 1.5px solid #c5cae9;
     }
-    /* sub 카드 */
+    .ecp-title-wrap { display: flex; flex-direction: column; gap: 5px; }
+    .ecp-num  { font-size: 10.5px; font-weight: 700; color: #5c6bc0; letter-spacing: .5px; text-transform: uppercase; }
+    .ecp-title { font-size: 16px; font-weight: 800; color: #1a1a1a; line-height: 1.3; }
+    .ecp-meta  { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; flex-shrink: 0; }
+
+    /* 카드 내부 섹션 공통 */
+    .card-section {
+      padding: 12px 20px;
+      border-bottom: 1px solid #f0f0ec;
+    }
+    .card-section:last-child { border-bottom: none; }
+    .card-section-title {
+      font-size: 10.5px; font-weight: 800; color: #888; letter-spacing: .8px;
+      text-transform: uppercase; margin-bottom: 9px;
+    }
+
+    /* 컨텍스트 섹션 */
+    .card-context-text {
+      font-size: 13px; color: #333; line-height: 1.65;
+    }
+
+    /* 체크리스트 섹션 */
+    .card-checklist { display: flex; flex-direction: column; gap: 6px; }
+    .checklist-item {
+      display: flex; align-items: flex-start; gap: 9px;
+      font-size: 13px; color: #222; line-height: 1.5;
+    }
+    .checklist-box {
+      width: 16px; height: 16px; border: 1.5px solid #9fa8da;
+      border-radius: 3px; flex-shrink: 0; margin-top: 2px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; background: #fff;
+    }
+    .checklist-box.checked { background: #5c6bc0; border-color: #5c6bc0; }
+    .checklist-box.checked::after { content: '✓'; color: #fff; font-size: 10px; font-weight: 700; }
+
+    /* 관련 데이터 섹션 */
+    .card-evidence { display: flex; flex-direction: column; gap: 8px; }
+    .evidence-row {
+      display: grid; grid-template-columns: 48px 1fr;
+      gap: 10px; align-items: flex-start; font-size: 12.5px; line-height: 1.6;
+    }
+    .evidence-label {
+      font-size: 10px; font-weight: 700; letter-spacing: .3px;
+      padding: 2px 5px; border-radius: 3px; text-align: center; margin-top: 3px;
+      white-space: nowrap;
+    }
+    .label-quote  { background: #fff8e1; color: #b45309; }
+    .label-reason { background: #e8f5e9; color: #276749; }
+    .label-ctx    { background: #f3e5f5; color: #7b1fa2; }
+    .evidence-text { color: #444; }
+
+    /* sub 행 */
     .event-card-sub {
       background: #fafaf8; border: 1px solid #e8e8e4;
-      border-radius: 8px; padding: 11px 14px; margin-bottom: 5px;
-      margin-left: 16px; border-left: 3px solid #9fa8da;
+      border-radius: 9px; overflow: hidden; margin-left: 0;
     }
-    .event-card-sub .task-name {
-      font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #222;
+    .ecs-header {
+      padding: 10px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #f0f0ec; gap: 12px; flex-wrap: wrap;
     }
-    /* 독립 카드 */
+    .ecs-title { font-size: 13px; font-weight: 700; color: #1a1a1a; }
+    .ecs-meta  { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; flex-shrink: 0; }
+    .ecs-body  { padding: 10px 16px; display: flex; flex-direction: column; gap: 8px; }
+
+    /* 데이터 소스 그리드 */
+    .data-sources { display: flex; flex-direction: column; gap: 0; }
+    .data-source-row {
+      display: grid; grid-template-columns: 110px 1fr;
+      gap: 0; border-bottom: 1px solid #f0f0ec; min-height: 36px;
+    }
+    .data-source-row:last-child { border-bottom: none; }
+    .ds-label {
+      display: flex; align-items: center; gap: 6px;
+      padding: 10px 14px; background: #f8f8f6;
+      border-right: 1px solid #f0f0ec;
+      font-size: 11.5px; font-weight: 700; color: #555;
+      white-space: nowrap;
+    }
+    .ds-label.future { color: #bbb; }
+    .ds-label .ds-icon { font-size: 14px; }
+    .ds-content {
+      padding: 10px 14px; font-size: 12.5px; color: #333; line-height: 1.6;
+      display: flex; flex-direction: column; gap: 5px;
+    }
+    .ds-content.future {
+      color: #bbb; font-size: 12px; align-items: flex-start; justify-content: center;
+    }
+    .ds-future-badge {
+      font-size: 10px; font-weight: 600; color: #aaa;
+      background: #f0f0ec; border-radius: 3px; padding: 1px 6px;
+    }
+    .ds-field { display: flex; gap: 7px; align-items: flex-start; }
+    .ds-field-label {
+      font-size: 10px; font-weight: 700; padding: 2px 5px; border-radius: 3px;
+      white-space: nowrap; margin-top: 2px; flex-shrink: 0;
+    }
+    .ds-field-text { color: #444; }
+
+    /* 독립(solo) 카드 */
     .event-card-solo {
-      background: #fff; border: 1px solid #e8e8e4;
-      border-radius: 10px; padding: 13px 16px; margin-bottom: 6px;
-    }
-    .event-card-solo .task-name {
-      font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #1a1a1a;
+      background: #fff; border: 1px solid #e0e0dc;
+      border-radius: 12px; overflow: hidden;
     }
 
     /* 카드 공통 */
-    .card-meta { font-size: 11.5px; color: #888; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 4px; }
-    .card-ctx  { font-size: 12px; color: #666; margin-top: 4px; line-height: 1.5; }
-    .card-fields { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .card-meta { font-size: 11.5px; color: #888; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .card-fields { display: flex; flex-wrap: wrap; gap: 6px; }
     .field-chip {
       font-size: 11px; background: #f5f5f0; border: 1px solid #e8e8e4;
       border-radius: 4px; padding: 2px 8px; color: #555;
     }
     .field-chip b { color: #333; }
+    .ecp-body { padding: 0; }
 
     .badge {
       display: inline-block; border-radius: 4px;
@@ -461,10 +627,10 @@
 
     /* ══ 캘린더 ══ */
     .cal-nav {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 16px;
+      display: flex; align-items: center; justify-content: center;
+      gap: 16px; margin-bottom: 16px;
     }
-    .cal-nav-title { font-size: 18px; font-weight: 700; }
+    .cal-nav-title { font-size: 18px; font-weight: 700; min-width: 120px; text-align: center; }
     .cal-nav-btn {
       background: #fff; border: 1px solid #e8e8e4; border-radius: 7px;
       padding: 5px 13px; font-size: 15px; cursor: pointer;
@@ -897,6 +1063,57 @@
     }
     .events-count { font-size: 12px; color: #aaa; }
     /* ══ 관리자 페이지 ══ */
+    /* 프로젝트 관리 */
+    .project-card {
+      background: #fff; border: 1px solid #e8e8e4; border-radius: 12px;
+      margin-bottom: 14px; overflow: hidden;
+    }
+    .project-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px; cursor: pointer; gap: 12px;
+    }
+    .project-card-header:hover { background: #fafaf8; }
+    .project-name { font-size: 15px; font-weight: 700; color: #1a1a1a; }
+    .project-client { font-size: 12px; color: #888; margin-top: 2px; }
+    .project-badge {
+      font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 10px;
+    }
+    .badge-active { background: #e8f5e9; color: #276749; }
+    .badge-done   { background: #f5f5f5; color: #888; }
+    .badge-hold   { background: #fff3e0; color: #b45309; }
+    .project-members-panel { padding: 0 18px 14px; border-top: 1px solid #f0f0ec; }
+    .member-role-group { margin-top: 12px; }
+    .member-role-title { font-size: 10.5px; font-weight: 700; color: #888; letter-spacing: .5px; margin-bottom: 6px; text-transform: uppercase; }
+    .member-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .member-chip {
+      font-size: 12px; background: #f0f2fb; border: 1px solid #c5cae9;
+      border-radius: 20px; padding: 3px 12px; color: #3949ab;
+    }
+    .pm-row { display: flex; gap: 8px; align-items: center; }
+    .pm-row select { flex: 1; padding: 7px 10px; border: 1px solid #e8e8e4; border-radius: 7px; font-size: 13px; }
+    .pm-row input { width: 140px; padding: 7px 10px; border: 1px solid #e8e8e4; border-radius: 7px; font-size: 13px; }
+    .pm-row .btn-remove { background: none; border: none; color: #ccc; font-size: 16px; cursor: pointer; padding: 0 4px; }
+    .pm-row .btn-remove:hover { color: #e53935; }
+
+    /* 인물 관리 */
+    .contacts-group { margin-bottom: 20px; }
+    .contacts-group-title {
+      font-size: 11px; font-weight: 800; color: #888; letter-spacing: .8px;
+      text-transform: uppercase; padding: 6px 0; margin-bottom: 8px;
+      border-bottom: 1px solid #f0f0ec;
+    }
+    .contacts-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .contacts-table th {
+      text-align: left; font-size: 11px; font-weight: 700; color: #aaa;
+      padding: 6px 10px; border-bottom: 1px solid #f0f0ec;
+    }
+    .contacts-table td { padding: 9px 10px; border-bottom: 1px solid #fafafa; vertical-align: top; }
+    .contacts-table tr:hover td { background: #fafaf8; cursor: pointer; }
+    .contacts-table tr:last-child td { border-bottom: none; }
+    .contact-name { font-weight: 700; color: #1a1a1a; }
+    .contact-nick { font-size: 11.5px; color: #888; margin-top: 2px; }
+    .contact-note { font-size: 11.5px; color: #e65100; margin-top: 2px; }
+
     .admin-layout {
       display: grid;
       grid-template-columns: 220px 1fr;
@@ -1117,8 +1334,12 @@
 
       .patchnote-panel { width: 100%; border-radius: 14px 14px 0 0; }
 
-      .event-card-sub { margin-left: 8px; }
-
+      .evidence-row { grid-template-columns: 44px 1fr; }
+      .data-source-row { grid-template-columns: 80px 1fr; }
+      .ds-label { padding: 8px 10px; font-size: 10.5px; }
+      .ds-content { padding: 8px 10px; }
+      .ecp-header { flex-direction: column; gap: 8px; }
+      .ecs-header { flex-direction: column; align-items: flex-start; gap: 6px; }
       .extract-header { flex-direction: column; align-items: flex-start; gap: 8px; }
     }
 
@@ -1183,8 +1404,8 @@
 <!-- 왼쪽 사이드바 -->
 <div class="sidebar" id="mainSidebar">
   <div class="user-header">
-    <div class="avatar">동석</div>
-    <span class="user-name">김동석 ∨</span>
+    <div class="avatar">최종</div>
+    <span class="user-name">최종근 ∨</span>
   </div>
 
   <!-- 1. Dashboard (캘린더) -->
@@ -1193,7 +1414,7 @@
   </div>
 
   <!-- 2. 회의록 -->
-  <div class="menu-item" id="menu-input" onclick="openMenu('input'); openPage('input'); loadMicDevices(); loadPptRefList()">
+  <div class="menu-item" id="menu-input" onclick="openMenu('input'); openPage('input'); loadMicDevices(); loadPptRefList(); refreshProjectSelect()">
     <span class="icon">🎙️</span> 회의록
   </div>
 
@@ -1215,12 +1436,24 @@
     <span class="icon">📅</span> 일정 데이터
   </div>
 
+  <div class="menu-item" id="menu-admin-projects" onclick="openMenu('admin-projects'); openPage('admin-projects'); loadProjects()">
+    <span class="icon">📁</span> 프로젝트 관리
+  </div>
+
+  <div class="menu-item" id="menu-admin-contacts" onclick="openMenu('admin-contacts'); openPage('admin-contacts'); loadContacts()">
+    <span class="icon">👤</span> 인물 관리
+  </div>
+
   <div class="menu-item" id="menu-admin-rules" onclick="openMenu('admin-rules'); openPage('admin-rules'); loadAdminRules()">
     <span class="icon">📋</span> Rules 편집
   </div>
 
   <div class="menu-item" id="menu-ppt" onclick="openMenu('ppt'); openPage('ppt'); loadPptList()">
     <span class="icon">📂</span> PPT 관리
+  </div>
+
+  <div class="menu-item" id="menu-agent" onclick="openMenu('agent'); openPage('agent')">
+    <span class="icon">🤖</span> 멀티 에이전트
   </div>
 
   <!-- 토큰 카운터 -->
@@ -1454,7 +1687,19 @@
             <button class="btn btn-secondary" style="padding:3px 10px;font-size:12px;" onclick="document.getElementById('transcriptInput').value=''; syncRecStatus()">지우기</button>
           </div>
         </div>
-        <textarea id="transcriptInput" placeholder="녹음하거나 직접 붙여넣으세요..." style="height:360px;resize:vertical;"></textarea>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <label style="font-size:12px;color:#888;white-space:nowrap;">회의 날짜</label>
+            <input type="date" id="meetingDate" style="font-size:13px;border:1px solid #e8e8e4;border-radius:7px;padding:4px 10px;background:#fff;color:#1a1a1a;cursor:pointer;">
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:160px;">
+            <label style="font-size:12px;color:#888;white-space:nowrap;">프로젝트</label>
+            <select id="meetingProject" style="font-size:13px;border:1px solid #e8e8e4;border-radius:7px;padding:4px 10px;background:#fff;color:#1a1a1a;flex:1;cursor:pointer;">
+              <option value="">선택 안 함</option>
+            </select>
+          </div>
+        </div>
+        <textarea id="transcriptInput" placeholder="녹음하거나 직접 붙여넣으세요..." style="height:340px;resize:vertical;"></textarea>
 
         <!-- PPT 참고 선택 -->
         <div class="ppt-ref-row" id="pptRefRow" style="margin-top:12px;">
@@ -1534,7 +1779,6 @@
       <button class="cal-nav-btn" onclick="calMove(-1)">‹</button>
       <span class="cal-nav-title" id="calTitle"></span>
       <button class="cal-nav-btn" onclick="calMove(1)">›</button>
-      <button class="btn btn-danger" style="padding:5px 12px;font-size:12px;margin-left:8px;" onclick="clearDashboard()">🗑 초기화</button>
     </div>
     <div class="cal-wrap">
       <div class="cal-grid" id="calGrid"></div>
@@ -1629,6 +1873,183 @@
   </div>
 
   <!-- 관리자: Rules 편집 -->
+  <!-- 관리자: 프로젝트 관리 -->
+  <div class="page" id="page-admin-projects">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div class="section-title" style="margin-bottom:0;">📁 프로젝트 관리</div>
+      <button class="btn btn-primary" style="padding:6px 14px;font-size:13px;" onclick="openProjectModal()">+ 추가</button>
+    </div>
+    <div class="section-sub" style="margin-bottom:20px;">프로젝트별 담당자를 등록하면 회의록 추출 시 해당 인물 정보가 자동 주입됩니다.</div>
+    <div id="projectList"></div>
+
+    <!-- 프로젝트 추가/수정 모달 -->
+    <div id="projectModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:flex-start;justify-content:center;padding-top:60px;overflow-y:auto;">
+      <div style="background:#fff;border-radius:14px;padding:28px;width:580px;max-width:95vw;margin-bottom:40px;">
+        <div style="font-size:16px;font-weight:700;margin-bottom:20px;" id="projectModalTitle">프로젝트 추가</div>
+        <input type="hidden" id="projectId">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+          <div>
+            <label style="font-size:12px;color:#888;display:block;margin-bottom:4px;">프로젝트명 *</label>
+            <input id="pName" type="text" placeholder="IKEA +you" style="width:100%;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:12px;color:#888;display:block;margin-bottom:4px;">클라이언트</label>
+            <input id="pClient" type="text" placeholder="IKEA" style="width:100%;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:12px;color:#888;display:block;margin-bottom:4px;">상태</label>
+            <select id="pStatus" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid #e8e8e4;border-radius:7px;font-size:13px;">
+              <option value="진행중">진행중</option>
+              <option value="완료">완료</option>
+              <option value="보류">보류</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:12px;color:#888;display:block;margin-bottom:4px;">설명</label>
+            <input id="pDesc" type="text" placeholder="프로젝트 간단 설명" style="width:100%;box-sizing:border-box;">
+          </div>
+        </div>
+
+        <!-- 담당자 섹션 -->
+        <div style="margin-top:16px;">
+          <div style="font-size:13px;font-weight:700;margin-bottom:10px;">담당자 구성</div>
+          <div id="projectMemberRows" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px;"></div>
+          <button class="btn btn-secondary" style="font-size:12px;padding:4px 12px;" onclick="addProjectMemberRow()">+ 담당자 추가</button>
+        </div>
+
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
+          <button class="btn btn-secondary" onclick="closeProjectModal()">취소</button>
+          <button class="btn btn-danger" id="projectDeleteBtn" style="display:none;" onclick="deleteProject()">삭제</button>
+          <button class="btn btn-primary" onclick="saveProject()">저장</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 관리자: 인물 관리 -->
+  <div class="page" id="page-admin-contacts">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div class="section-title" style="margin-bottom:0;">👤 인물 관리</div>
+      <button class="btn btn-primary" style="padding:6px 14px;font-size:13px;" onclick="openContactModal()">+ 추가</button>
+    </div>
+    <div class="section-sub" style="margin-bottom:16px;">소속·직책·호칭을 등록하면 STT 인식과 LLM 추출에 자동 반영됩니다.</div>
+
+    <!-- 소속별 그룹 컨테이너 -->
+    <div id="contactsGroupList"></div>
+
+    <!-- 인물 추가/수정 모달 -->
+    <div id="contactModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center;">
+      <div style="background:#fff;border-radius:14px;padding:28px;width:480px;max-width:95vw;max-height:90vh;overflow-y:auto;">
+        <div style="font-size:16px;font-weight:700;margin-bottom:20px;" id="contactModalTitle">인물 추가</div>
+        <input type="hidden" id="contactId">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <label style="font-size:12px;color:#888;display:block;margin-bottom:4px;">이름 *</label>
+            <input id="cName" type="text" placeholder="김수아" style="width:100%;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:12px;color:#888;display:block;margin-bottom:4px;">호칭 / 별명 (쉼표 구분)</label>
+            <input id="cNicknames" type="text" placeholder="수아님, 수아 대리님" style="width:100%;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:12px;color:#888;display:block;margin-bottom:4px;">소속</label>
+            <input id="cOrg" type="text" placeholder="IKEA" style="width:100%;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:12px;color:#888;display:block;margin-bottom:4px;">팀</label>
+            <input id="cTeam" type="text" placeholder="마케팅팀" style="width:100%;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:12px;color:#888;display:block;margin-bottom:4px;">직책</label>
+            <input id="cRole" type="text" placeholder="대리" style="width:100%;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:12px;color:#888;display:block;margin-bottom:4px;">담당 업무</label>
+            <input id="cResp" type="text" placeholder="PS Collection 담당" style="width:100%;box-sizing:border-box;">
+          </div>
+        </div>
+        <div style="margin-top:12px;">
+          <label style="font-size:12px;color:#888;display:block;margin-bottom:4px;">메모 / 주의사항</label>
+          <textarea id="cNote" rows="2" placeholder="예: '수환님'과 혼동 주의 — 이 분은 외부 IKEA 담당자" style="width:100%;box-sizing:border-box;resize:vertical;"></textarea>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
+          <button class="btn btn-secondary" onclick="closeContactModal()">취소</button>
+          <button class="btn btn-danger" id="contactDeleteBtn" style="display:none;" onclick="deleteContact()">삭제</button>
+          <button class="btn btn-primary" onclick="saveContact()">저장</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 멀티 에이전트 ══ -->
+  <div class="page" id="page-agent">
+    <div class="section-title">🤖 멀티 에이전트</div>
+    <div class="section-sub">crewAI 기반 멀티 에이전트가 회의록을 단계별로 추출합니다.</div>
+
+    <div class="agent-layout">
+      <!-- 입력 -->
+      <div class="agent-input-card">
+        <div style="font-size:13px;font-weight:700;color:#444;margin-bottom:10px;">회의록 입력</div>
+        <textarea id="agentTranscript" placeholder="회의록 텍스트를 붙여넣으세요..."></textarea>
+        <div class="agent-controls">
+          <select id="agentProject" style="font-size:13px;border:1px solid #e8e8e4;border-radius:7px;padding:5px 10px;background:#fff;color:#1a1a1a;cursor:pointer;">
+            <option value="">프로젝트 선택 안 함</option>
+          </select>
+          <button class="btn btn-primary" id="btnAgentRun" onclick="runAgent()">▶ 에이전트 실행</button>
+          <span id="agentStatusLabel" style="font-size:12px;color:#aaa;"></span>
+        </div>
+      </div>
+
+      <!-- 터미널 로그 -->
+      <div class="agent-terminal-wrap">
+        <div class="agent-terminal-header">
+          <span>
+            <span class="agent-status-dot" id="agentDot"></span>
+            <span class="agent-terminal-title">AGENT LOG</span>
+          </span>
+          <button onclick="clearAgentLog()" style="font-size:11px;color:#8b949e;background:none;border:none;cursor:pointer;">지우기</button>
+        </div>
+        <div class="agent-terminal-log" id="agentLog">
+          <div class="log-line dim">에이전트를 실행하면 여기에 실시간 로그가 출력됩니다.</div>
+        </div>
+      </div>
+
+      <!-- 완료 결과 -->
+      <div class="agent-result-card" id="agentResultCard">
+        <div style="font-size:13px;font-weight:700;color:#00695c;margin-bottom:8px;">✅ 추출 완료</div>
+        <div id="agentResultText" style="font-size:13px;color:#444;"></div>
+        <button class="btn btn-primary" style="margin-top:12px;" onclick="openMenu('extracted');openPage('extracted');showExtractedPage()">추출 결과 보기 →</button>
+      </div>
+
+      <!-- 실행 이력 -->
+      <div style="background:#fff;border:1.5px solid #e8e8e4;border-radius:12px;overflow:hidden;">
+        <div style="padding:12px 20px;border-bottom:1px solid #f0f0ec;display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:12px;font-weight:700;color:#444;">실행 이력</span>
+          <button onclick="loadAgentHistory()" style="font-size:11px;color:#888;background:none;border:none;cursor:pointer;">새로고침</button>
+        </div>
+        <div id="agentHistoryList" style="padding:12px 20px;max-height:320px;overflow-y:auto;">
+          <div style="font-size:12px;color:#aaa;">실행 이력이 없습니다.</div>
+        </div>
+      </div>
+
+      <!-- 에이전트 메모리 -->
+      <div style="background:#fff;border:1.5px solid #e8e8e4;border-radius:12px;overflow:hidden;">
+        <div style="padding:12px 20px;border-bottom:1px solid #f0f0ec;display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:12px;font-weight:700;color:#444;">에이전트 메모리</span>
+          <select id="agentMemorySelect" onchange="loadAgentMemory(this.value)" style="font-size:11px;border:1px solid #e8e8e4;border-radius:5px;padding:3px 8px;">
+            <option value="">에이전트 선택</option>
+            <option value="pig">pig (수집)</option>
+            <option value="wolf2">wolf2 (정리)</option>
+            <option value="wolf">wolf (매니저)</option>
+          </select>
+        </div>
+        <div id="agentMemoryList" style="padding:12px 20px;max-height:200px;overflow-y:auto;">
+          <div style="font-size:12px;color:#aaa;">에이전트를 선택하세요.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="page" id="page-admin-rules">
     <div class="section-title">📋 Rules 편집</div>
     <div class="section-sub">LLM에 주입되는 추출 규칙 파일을 편집합니다. (<code>config/rules/*.md</code>)</div>
@@ -1789,6 +2210,7 @@
   let taskViews     = {};
   let recentList    = [];
   let lastExtracted = []; // 마지막 추출 결과
+  let lastMeta = null;   // 마지막 회의 메타
 
   async function saveState() {
     try {
@@ -1808,7 +2230,7 @@
   // ── 메뉴 네비게이션 ──
   function openMenu(name) {
     // 상위 메뉴 active 처리 (서브메뉴는 항상 표시)
-    ['dashboard','task','input','stt','rag-debug','admin-rules','admin-events','ppt'].forEach(m => {
+    ['dashboard','task','input','stt','rag-debug','admin-rules','admin-events','admin-contacts','ppt','agent'].forEach(m => {
       document.getElementById('menu-' + m)?.classList.remove('active');
     });
     document.getElementById('menu-' + name)?.classList.add('active');
@@ -1861,12 +2283,12 @@
       const res = await fetch('/api/run-calendar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ transcript, ppt_context: pptRefText || undefined })
+        body: JSON.stringify({ transcript, ppt_context: pptRefText || undefined, meeting_date: document.getElementById('meetingDate').value || undefined, project_id: document.getElementById('meetingProject').value || undefined })
       });
       const data = await res.json();
       if (data.success) {
         allEvents = [...allEvents, ...data.events];
-        renderExtracted(data.events);
+        renderExtracted(data.events, data.meta);
         await classifyAndRender();
         addRecentMeeting(transcript);
         saveState();
@@ -1896,12 +2318,12 @@
       const res = await fetch('/api/extract', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ transcript, ppt_context: pptRefText || undefined })
+        body: JSON.stringify({ transcript, ppt_context: pptRefText || undefined, meeting_date: document.getElementById('meetingDate').value || undefined, project_id: document.getElementById('meetingProject').value || undefined })
       });
       const data = await res.json();
       if (data.success) {
         allEvents = [...allEvents, ...data.events];
-        renderExtracted(data.events);
+        renderExtracted(data.events, data.meta);
         await classifyAndRender();
         addRecentMeeting(transcript);
         saveState();
@@ -1960,11 +2382,75 @@
       if (ev.task_level === 'sub')    return `<span class="badge badge-sub">sub</span>`;
       return `<span class="badge badge-solo">task</span>`;
     };
-    const fieldChips = ev => {
-      const chips = [];
-      if (ev.assignee)   chips.push(`<span class="field-chip"><b>담당</b> ${ev.assignee}</span>`);
-      if (ev.parent_task) chips.push(`<span class="field-chip"><b>상위</b> ${ev.parent_task}</span>`);
-      return chips.length ? `<div class="card-fields">${chips.join('')}</div>` : '';
+    let _checkId = 0;
+    const checklistSection = (ev, compact) => {
+      const items = Array.isArray(ev.checklist) ? ev.checklist : [];
+      if (!items.length) return '';
+      const prefix = compact ? 'ecs' : 'ecp';
+      const rows = items.map(item => {
+        const id = `chk-${++_checkId}`;
+        return `<div class="checklist-item">
+          <div class="checklist-box" id="${id}" onclick="this.classList.toggle('checked')"></div>
+          <span>${item}</span>
+        </div>`;
+      }).join('');
+      return `<div class="card-section">
+        <div class="card-section-title">확인 체크리스트</div>
+        <div class="card-checklist">${rows}</div>
+      </div>`;
+    };
+
+    const evidenceSection = (ev, compact) => {
+      // ── 회의록 소스 ──
+      const meetingFields = [];
+      if (ev.source_quote) meetingFields.push(`
+        <div class="ds-field">
+          <span class="ds-field-label label-quote">원문</span>
+          <span class="ds-field-text">"${ev.source_quote}"</span>
+        </div>`);
+      if (ev.reason) meetingFields.push(`
+        <div class="ds-field">
+          <span class="ds-field-label label-reason">근거</span>
+          <span class="ds-field-text">${ev.reason}</span>
+        </div>`);
+      const meetingCell = meetingFields.length
+        ? `<div class="ds-content">${meetingFields.join('')}</div>`
+        : `<div class="ds-content future"><span class="ds-future-badge">데이터 없음</span></div>`;
+
+      // ── PPT/문서 소스 ──
+      const pptCell = ev.ppt_source
+        ? `<div class="ds-content">${ev.ppt_source}</div>`
+        : `<div class="ds-content future"><span class="ds-future-badge">첨부 시 표시</span></div>`;
+
+      // ── 미래 소스 (placeholder) ──
+      const futureCell = `<div class="ds-content future"><span class="ds-future-badge">연동 예정</span></div>`;
+
+      const pad = compact ? 'padding:0 0;' : '';
+      return `<div class="card-section" style="${pad}">
+        <div class="card-section-title">관련 데이터</div>
+        <div class="data-sources">
+          <div class="data-source-row">
+            <div class="ds-label"><span class="ds-icon">📝</span>회의록</div>
+            ${meetingCell}
+          </div>
+          <div class="data-source-row">
+            <div class="ds-label"><span class="ds-icon">📊</span>PPT / 문서</div>
+            ${pptCell}
+          </div>
+          <div class="data-source-row">
+            <div class="ds-label future"><span class="ds-icon">📧</span>메일</div>
+            ${futureCell}
+          </div>
+          <div class="data-source-row">
+            <div class="ds-label future"><span class="ds-icon">🔗</span>노션</div>
+            ${futureCell}
+          </div>
+          <div class="data-source-row">
+            <div class="ds-label future"><span class="ds-icon">💬</span>메신저</div>
+            ${futureCell}
+          </div>
+        </div>
+      </div>`;
     };
 
     const parents  = source.filter(e => e.task_level === 'parent');
@@ -1974,7 +2460,66 @@
 
     sub.textContent = `총 ${source.length}건 · parent ${parents.length} · sub ${subs.length} · 독립 ${solos.length} · TBD ${tbdCount}`;
 
+    // 회의 메타 카드
+    const buildMetaCard = (meta) => {
+      if (!meta) return '';
+      let sections = '';
+
+      // 프로젝트
+      const proj = meta.inferred_project;
+      sections += `<div class="mmc-section">
+        <div class="mmc-section-title">추론된 프로젝트</div>
+        <div class="mmc-project-name">${proj || '특정 불가'}</div>
+        ${meta.project_reason ? `<div class="mmc-reason">${meta.project_reason}</div>` : ''}
+      </div>`;
+
+      // 참석자
+      const ps = Array.isArray(meta.participants) ? meta.participants : [];
+      if (ps.length) {
+        const items = ps.map(p => `
+          <div class="mmc-person">
+            <div class="mmc-person-name">${p.name || '?'}${p.mentioned_as && p.mentioned_as !== p.name ? ` <span style="font-weight:400;color:#888;">· ${p.mentioned_as}</span>` : ''}</div>
+            <div class="mmc-person-evidence">${p.evidence || ''}</div>
+          </div>`).join('');
+        sections += `<div class="mmc-section">
+          <div class="mmc-section-title">참석자 (${ps.length}명)</div>
+          <div class="mmc-participants">${items}</div>
+        </div>`;
+      }
+
+      // 미정 담당자
+      const ur = Array.isArray(meta.unresolved) ? meta.unresolved : [];
+      if (ur.length) {
+        const confColor = c => c === '높음' ? '#2e7d32' : c === '보통' ? '#e65100' : '#999';
+        const items = ur.map(u => {
+          const conf = u.confidence || '';
+          const confBadge = conf ? `<span style="font-size:10.5px;font-weight:700;color:${confColor(conf)};margin-left:6px;">[${conf}]</span>` : '';
+          return `
+          <div class="mmc-unresolved-item">
+            <div class="mmc-unresolved-mentioned">원문: "${u.mentioned || ''}"</div>
+            <div class="mmc-unresolved-guess">${u.best_guess ? `추정: ${u.best_guess}` : '특정 불가'}${confBadge}</div>
+            <div class="mmc-unresolved-reason">${u.reason || ''}</div>
+          </div>`;
+        }).join('');
+        sections += `<div class="mmc-section">
+          <div class="mmc-section-title">미정 담당자 추측 (${ur.length}건)</div>
+          <div class="mmc-unresolved">${items}</div>
+        </div>`;
+      }
+
+      const typeLabel = meta.meeting_type || '';
+      const headcount = meta.estimated_headcount ? `${meta.estimated_headcount}인` : '';
+      const typeBadge = (typeLabel || headcount)
+        ? `<span style="margin-left:10px;font-size:11px;font-weight:600;color:#00796b;background:#b2dfdb;padding:2px 8px;border-radius:10px;">${[headcount, typeLabel].filter(Boolean).join(' · ')}</span>`
+        : '';
+      return `<div class="meeting-meta-card">
+        <div class="mmc-header"><span class="mmc-header-title">🔍 회의 분석</span>${typeBadge}</div>
+        <div class="mmc-body">${sections}</div>
+      </div>`;
+    };
+
     let html = `
+      ${buildMetaCard(lastMeta)}
       <div class="extract-header">
         <div></div>
         <button class="btn-raw-toggle" onclick="toggleRawJson()">{ } JSON 보기</button>
@@ -1983,43 +2528,81 @@
         <pre id="rawJsonPre">${JSON.stringify(source, null, 2)}</pre>
       </div>`;
 
+    let idx = 1;
+    _checkId = 0;
+
+    const renderParentCard = (p, children, cls) => {
+      const assigneeChip = p.assignee && p.assignee !== '미정'
+        ? `<span class="field-chip"><b>담당</b> ${p.assignee}</span>` : '';
+      const contextSec = p.context
+        ? `<div class="card-section"><div class="card-section-title">개요</div><div class="card-context-text">${p.context}</div></div>` : '';
+      const subsSec = children.length ? `
+        <div class="card-section">
+          <div class="card-section-title">하위 업무 (${children.length})</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            ${children.map(s => `
+            <div class="event-card-sub">
+              <div class="ecs-header">
+                <span class="ecs-title">${s.task || ''}</span>
+                <div class="ecs-meta">
+                  ${levelBadge(s)} ${dateBadge(s)}
+                  ${s.assignee && s.assignee !== '미정' ? `<span class="field-chip"><b>담당</b> ${s.assignee}</span>` : ''}
+                </div>
+              </div>
+              ${s.context ? `<div class="ecs-body"><span style="font-size:12px;color:#555;">${s.context}</span></div>` : ''}
+              ${checklistSection(s, true)}
+              ${evidenceSection(s, true)}
+            </div>`).join('')}
+          </div>
+        </div>` : '';
+      return `
+      <div class="event-group">
+        <div class="${cls}">
+          <div class="ecp-header">
+            <div class="ecp-title-wrap">
+              <span class="ecp-num">업무 ${idx++}</span>
+              <span class="ecp-title">${p.task || ''}</span>
+            </div>
+            <div class="ecp-meta">
+              ${levelBadge(p)} ${dateBadge(p)} ${assigneeChip}
+            </div>
+          </div>
+          <div class="ecp-body">
+            ${contextSec}
+            ${checklistSection(p, false)}
+            ${subsSec}
+            ${evidenceSection(p, false)}
+          </div>
+        </div>
+      </div>`;
+    };
+
     parents.forEach(p => {
       const children = subs.filter(s => s.parent_task === p.task);
-      html += `<div class="event-group">
-        <div class="event-card-parent">
-          <div class="task-name">${p.task || ''}</div>
-          <div class="card-meta">${levelBadge(p)} ${dateBadge(p)}${p.assignee ? ` &nbsp;담당: ${p.assignee}` : ''}</div>
-          ${p.context ? `<div class="card-ctx">💬 ${p.context}</div>` : ''}
-        </div>
-        ${children.map(s => `
-          <div class="event-card-sub">
-            <div class="task-name">${s.task || ''}</div>
-            <div class="card-meta">${levelBadge(s)} ${dateBadge(s)}</div>
-            ${fieldChips(s)}
-            ${s.context ? `<div class="card-ctx">💬 ${s.context}</div>` : ''}
-          </div>`).join('')}
-      </div>`;
+      html += renderParentCard(p, children, 'event-card-parent');
     });
 
-    // parent 없는 orphan subs
+    // orphan subs
     const orphans = subs.filter(s => s.parent_task && !parents.find(p => p.task === s.parent_task));
     orphans.forEach(ev => {
-      html += `<div class="event-card-sub" style="margin-left:0;">
-        <div class="task-name">${ev.task || ''}</div>
-        <div class="card-meta">${levelBadge(ev)} ${dateBadge(ev)}</div>
-        ${fieldChips(ev)}
-        ${ev.context ? `<div class="card-ctx">💬 ${ev.context}</div>` : ''}
+      html += `
+      <div class="event-group">
+        <div class="event-card-sub">
+          <div class="ecs-header">
+            <span class="ecs-title">${ev.task || ''}</span>
+            <div class="ecs-meta">${levelBadge(ev)} ${dateBadge(ev)}
+              ${ev.assignee && ev.assignee !== '미정' ? `<span class="field-chip"><b>담당</b> ${ev.assignee}</span>` : ''}
+            </div>
+          </div>
+          ${ev.context ? `<div class="ecs-body"><span style="font-size:12px;color:#555;">${ev.context}</span></div>` : ''}
+          ${checklistSection(ev, true)}
+          ${evidenceSection(ev, true)}
+        </div>
       </div>`;
     });
 
     solos.forEach(ev => {
-      html += `<div class="event-group">
-        <div class="event-card-parent">
-          <div class="task-name">${ev.task || ''}</div>
-          <div class="card-meta">${dateBadge(ev)}${ev.assignee ? ` &nbsp;담당: ${ev.assignee}` : ''}</div>
-          ${ev.context ? `<div class="card-ctx">💬 ${ev.context}</div>` : ''}
-        </div>
-      </div>`;
+      html += renderParentCard(ev, [], 'event-card-solo');
     });
 
     list.innerHTML = html;
@@ -2035,8 +2618,9 @@
     }
   }
 
-  function renderExtracted(events) {
+  function renderExtracted(events, meta) {
     lastExtracted = events;
+    if (meta) lastMeta = meta;
     _updateExtractedBadge(events.length);
     // 결과 페이지로 이동 후 렌더
     openMenu('extracted');
@@ -2304,6 +2888,16 @@
 
   // 페이지 로드 시 초기값 가져오기
   fetchUsage();
+  document.getElementById('meetingDate').value = new Date().toISOString().slice(0, 10);
+  // 프로젝트 드롭다운 미리 로드 (회의록·에이전트 페이지 진입 전에 준비)
+  fetch('/api/projects').then(r => r.json()).then(projects => {
+    _projects = projects;
+    refreshProjectSelect();
+    // 에이전트 페이지 드롭다운도 동기화
+    const src = document.getElementById('meetingProject');
+    const dst = document.getElementById('agentProject');
+    if (src && dst) dst.innerHTML = src.innerHTML;
+  }).catch(() => {});
 
   // ══ RAG 채팅 ══
   let chatHistory = [];
@@ -2422,7 +3016,6 @@
       renderTaskViews();
       renderCalendar();
       renderUpcoming();
-      renderDashboard();
       showToast('✅ 일정 데이터가 초기화됐습니다.');
     } catch(e) {
       showToast('❌ 초기화 실패: ' + e.message);
@@ -2441,7 +3034,6 @@
         renderTaskViews();
         renderCalendar();
         renderUpcoming();
-        renderDashboard();
         showToast('✅ 전체 데이터가 초기화됐습니다.');
       }
     } catch(e) {
@@ -2496,6 +3088,429 @@
 
   // ── 관리자: Rules 편집 ──
   let adminCurrentFile = null;
+
+  // ══ 프로젝트 관리 ══
+  let _projects = [], _allContacts = [];
+
+  async function loadProjects() {
+    [_projects, _allContacts] = await Promise.all([
+      fetch('/api/projects').then(r => r.json()),
+      fetch('/api/contacts').then(r => r.json()),
+    ]);
+    renderProjects();
+    refreshProjectSelect();
+  }
+
+  function refreshProjectSelect() {
+    const sel = document.getElementById('meetingProject');
+    if (!sel) return;
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">선택 안 함</option>' +
+      _projects.filter(p => p.status === '진행중')
+        .map(p => `<option value="${p.id}" ${p.id == cur ? 'selected' : ''}>${p.name}${p.client ? ' ('+p.client+')' : ''}</option>`).join('');
+  }
+
+  function renderProjects() {
+    const el = document.getElementById('projectList');
+    if (!_projects.length) {
+      el.innerHTML = '<div class="task-empty">등록된 프로젝트가 없습니다.</div>'; return;
+    }
+    el.innerHTML = _projects.map(p => {
+      const badgeCls = p.status === '진행중' ? 'badge-active' : p.status === '완료' ? 'badge-done' : 'badge-hold';
+      return `<div class="project-card">
+        <div class="project-card-header" onclick="toggleProjectPanel(${p.id})">
+          <div>
+            <div class="project-name">${p.name}</div>
+            ${p.client ? `<div class="project-client">${p.client}${p.description ? ' · '+p.description : ''}</div>` : ''}
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span class="project-badge ${badgeCls}">${p.status}</span>
+            <button class="btn btn-secondary" style="padding:4px 10px;font-size:12px;" onclick="event.stopPropagation();openProjectModal(${p.id})">수정</button>
+          </div>
+        </div>
+        <div class="project-members-panel" id="pmp-${p.id}" style="display:none;"></div>
+      </div>`;
+    }).join('');
+  }
+
+  async function toggleProjectPanel(pid) {
+    const panel = document.getElementById(`pmp-${pid}`);
+    if (panel.style.display !== 'none') { panel.style.display = 'none'; return; }
+    const members = await fetch(`/api/projects/${pid}/members`).then(r => r.json());
+    if (!members.length) { panel.innerHTML = '<div style="color:#aaa;font-size:13px;padding:8px 0;">담당자가 없습니다.</div>'; }
+    else {
+      const byRole = {};
+      members.forEach(m => { const r = m.member_role || '기타'; (byRole[r] = byRole[r]||[]).push(m); });
+      panel.innerHTML = Object.entries(byRole).map(([role, list]) => `
+        <div class="member-role-group">
+          <div class="member-role-title">${role}</div>
+          <div class="member-chips">
+            ${list.map(m => `<span class="member-chip">${m.name}<span style="color:#9fa8da;font-size:10px;margin-left:4px;">${m.organization||''}</span></span>`).join('')}
+          </div>
+        </div>`).join('');
+    }
+    panel.style.display = 'block';
+  }
+
+  async function openProjectModal(pid) {
+    _allContacts = await fetch('/api/contacts').then(r => r.json());
+    document.getElementById('projectModal').style.display = 'flex';
+    document.getElementById('projectMemberRows').innerHTML = '';
+
+    if (pid && typeof pid === 'number') {
+      const p = _projects.find(x => x.id === pid);
+      const members = await fetch(`/api/projects/${pid}/members`).then(r => r.json());
+      document.getElementById('projectModalTitle').textContent = '프로젝트 수정';
+      document.getElementById('projectId').value = pid;
+      document.getElementById('pName').value = p.name || '';
+      document.getElementById('pClient').value = p.client || '';
+      document.getElementById('pStatus').value = p.status || '진행중';
+      document.getElementById('pDesc').value = p.description || '';
+      document.getElementById('projectDeleteBtn').style.display = 'inline-block';
+      members.forEach(m => addProjectMemberRow(m.contact_id, m.member_role));
+    } else {
+      document.getElementById('projectModalTitle').textContent = '프로젝트 추가';
+      ['projectId','pName','pClient','pDesc'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('pStatus').value = '진행중';
+      document.getElementById('projectDeleteBtn').style.display = 'none';
+    }
+  }
+
+  function addProjectMemberRow(contactId, memberRole) {
+    const contactOpts = _allContacts.map(c =>
+      `<option value="${c.id}" ${c.id == contactId ? 'selected' : ''}>${c.name} (${c.organization||''}${c.team ? ' '+c.team : ''})</option>`
+    ).join('');
+    const row = document.createElement('div');
+    row.className = 'pm-row';
+    row.innerHTML = `
+      <select><option value="">인물 선택</option>${contactOpts}</select>
+      <input type="text" placeholder="역할 (예: IKEA 담당자, DF 담당자)" value="${memberRole||''}">
+      <button class="btn-remove" onclick="this.parentElement.remove()">×</button>`;
+    document.getElementById('projectMemberRows').appendChild(row);
+  }
+
+  function closeProjectModal() {
+    document.getElementById('projectModal').style.display = 'none';
+  }
+
+  async function saveProject() {
+    const name = document.getElementById('pName').value.trim();
+    if (!name) { showToast('프로젝트명을 입력해주세요.'); return; }
+    const data = {
+      id: document.getElementById('projectId').value || null,
+      name, client: document.getElementById('pClient').value.trim(),
+      status: document.getElementById('pStatus').value,
+      description: document.getElementById('pDesc').value.trim(),
+    };
+    const res = await fetch('/api/projects', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    const { id: pid } = await res.json();
+
+    const rows = document.getElementById('projectMemberRows').querySelectorAll('.pm-row');
+    const members = [];
+    rows.forEach(row => {
+      const cid = row.querySelector('select').value;
+      const role = row.querySelector('input').value.trim();
+      if (cid) members.push({ contact_id: parseInt(cid), member_role: role });
+    });
+    await fetch(`/api/projects/${pid}/members`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(members) });
+
+    closeProjectModal();
+    await loadProjects();
+    showToast('✅ 저장됐습니다.');
+  }
+
+  async function deleteProject() {
+    const pid = document.getElementById('projectId').value;
+    if (!pid || !confirm('이 프로젝트를 삭제할까요?')) return;
+    await fetch(`/api/projects/${pid}`, { method: 'DELETE' });
+    closeProjectModal();
+    await loadProjects();
+    showToast('🗑 삭제됐습니다.');
+  }
+
+  // ══ 멀티 에이전트 ══
+  let _agentJobId = null;
+  let _agentES = null;
+
+  // 페이지 진입 시 프로젝트 드롭다운 동기화
+  (function syncAgentProjectSelect() {
+    const orig = refreshProjectSelect;
+    refreshProjectSelect = function() {
+      orig();
+      const src = document.getElementById('meetingProject');
+      const dst = document.getElementById('agentProject');
+      if (src && dst) dst.innerHTML = src.innerHTML;
+    };
+  })();
+
+  function runAgent() {
+    const transcript = document.getElementById('agentTranscript').value.trim();
+    if (!transcript) { showToast('회의록을 먼저 입력해주세요.'); return; }
+
+    const btn = document.getElementById('btnAgentRun');
+    btn.disabled = true;
+    btn.textContent = '⏳ 실행 중...';
+    document.getElementById('agentResultCard').classList.remove('visible');
+    _setAgentDot('running');
+    document.getElementById('agentStatusLabel').textContent = '에이전트 실행 중...';
+
+    const projectId = document.getElementById('agentProject').value || undefined;
+
+    fetch('/api/agent/run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ transcript, project_id: projectId }),
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data.error) {
+          showToast('❌ ' + data.error);
+          _setAgentDot('error');
+          btn.disabled = false; btn.textContent = '▶ 에이전트 실행';
+          return;
+        }
+        _agentJobId = data.job_id;
+        _startAgentStream(data.job_id);
+      })
+      .catch(e => {
+        showToast('❌ 서버 오류: ' + e.message);
+        _setAgentDot('error');
+        btn.disabled = false; btn.textContent = '▶ 에이전트 실행';
+      });
+  }
+
+  function _startAgentStream(jobId) {
+    if (_agentES) _agentES.close();
+    const log = document.getElementById('agentLog');
+    log.innerHTML = '';
+
+    _agentES = new EventSource(`/api/agent/stream?job_id=${jobId}`);
+    _agentES.onmessage = (e) => {
+      const raw = e.data;
+      if (raw.startsWith('__DONE__')) {
+        _agentES.close();
+        const result = JSON.parse(raw.slice(8));
+        _onAgentDone(result);
+        return;
+      }
+      _appendAgentLog(raw);
+    };
+    _agentES.onerror = () => {
+      _agentES.close();
+      _setAgentDot('error');
+      document.getElementById('agentStatusLabel').textContent = '연결 끊김';
+    };
+  }
+
+  function _appendAgentLog(line) {
+    const log = document.getElementById('agentLog');
+    const div = document.createElement('div');
+    div.className = 'log-line';
+    if (line.includes('[ERROR]') || line.includes('Error') || line.includes('ERROR'))
+      div.classList.add('err');
+    else if (line.includes('[완료]') || line.includes('✅') || line.includes('저장 완료'))
+      div.classList.add('ok');
+    else if (line.includes('[늑대]') || line.includes('Task') || line.includes('Agent'))
+      div.classList.add('hi');
+    div.textContent = line;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function _onAgentDone(result) {
+    const btn = document.getElementById('btnAgentRun');
+    btn.disabled = false; btn.textContent = '▶ 에이전트 실행';
+
+    if (result.status === 'error') {
+      _setAgentDot('error');
+      document.getElementById('agentStatusLabel').textContent = '오류 발생';
+      _appendAgentLog('[ERROR] ' + (result.error || '알 수 없는 오류'));
+      return;
+    }
+
+    _setAgentDot('done');
+    document.getElementById('agentStatusLabel').textContent = '완료';
+    const card = document.getElementById('agentResultCard');
+    card.classList.add('visible');
+    document.getElementById('agentResultText').textContent =
+      `총 ${result.count || '?'}건이 MinuteDone DB에 저장됐습니다.`;
+
+    // 대시보드 갱신
+    fetch('/api/load-state').then(r => r.json()).then(d => {
+      if (d.events) { allEvents = d.events; renderCalendar(); renderUpcoming(); }
+    }).catch(() => {});
+  }
+
+  function _setAgentDot(state) {
+    const dot = document.getElementById('agentDot');
+    dot.className = 'agent-status-dot ' + state;
+  }
+
+  async function loadAgentHistory() {
+    const el = document.getElementById('agentHistoryList');
+    try {
+      const runs = await fetch('/api/agent/history').then(r => r.json());
+      if (!runs.length) { el.innerHTML = '<div style="font-size:12px;color:#aaa;">실행 이력이 없습니다.</div>'; return; }
+
+      // session 단위로 그룹핑
+      const sessions = {};
+      runs.forEach(r => {
+        if (!sessions[r.session_id]) sessions[r.session_id] = { runs: [], created_at: r.created_at };
+        sessions[r.session_id].runs.push(r);
+      });
+
+      el.innerHTML = Object.entries(sessions).slice(0, 20).map(([sid, s]) => {
+        const statuses = s.runs.map(r => r.status);
+        const hasError = statuses.includes('error');
+        const dot = hasError ? '🔴' : '🟢';
+        const agents = [...new Set(s.runs.map(r => r.agent_name).filter(Boolean))].join(', ');
+        return `<div style="border-bottom:1px solid #f5f5f3;padding:8px 0;cursor:pointer;" onclick="loadSessionDetail('${sid}')">
+          <div style="font-size:12px;font-weight:600;">${dot} 세션 ${sid} <span style="font-weight:400;color:#aaa;font-size:11px;">${s.created_at || ''}</span></div>
+          <div style="font-size:11px;color:#888;margin-top:2px;">태스크 ${s.runs.length}건 · ${agents}</div>
+        </div>`;
+      }).join('');
+    } catch(e) { el.innerHTML = `<div style="font-size:12px;color:#f00;">${e.message}</div>`; }
+  }
+
+  async function loadSessionDetail(sessionId) {
+    const data = await fetch(`/api/agent/session/${sessionId}`).then(r => r.json());
+    const runs = data.runs || [];
+    const decisions = data.decisions || [];
+    const msg = runs.map(r =>
+      `[${r.agent_name}] ${r.task_name?.slice(0,30)} — ${r.status} ${r.duration_sec ? r.duration_sec+'s' : ''}\n${r.output_summary?.slice(0,80)}`
+    ).join('\n\n') + (decisions.length ? '\n\n--- wolf 판단 ---\n' + decisions.map(d => d.decision?.slice(0,60)).join('\n') : '');
+    alert(msg);
+  }
+
+  async function loadAgentMemory(agentName) {
+    const el = document.getElementById('agentMemoryList');
+    if (!agentName) { el.innerHTML = '<div style="font-size:12px;color:#aaa;">에이전트를 선택하세요.</div>'; return; }
+    const memories = await fetch(`/api/agent/memory?agent=${agentName}`).then(r => r.json());
+    if (!memories.length) { el.innerHTML = '<div style="font-size:12px;color:#aaa;">저장된 메모리가 없습니다.</div>'; return; }
+    el.innerHTML = memories.map(m => {
+      const conf = m.confidence >= 0.8 ? '#2e7d32' : m.confidence >= 0.5 ? '#e65100' : '#999';
+      return `<div style="border-bottom:1px solid #f5f5f3;padding:6px 0;">
+        <div style="font-size:11.5px;font-weight:600;color:#333;">${m.key}</div>
+        <div style="font-size:11px;color:#555;margin-top:2px;">${m.value}</div>
+        <div style="font-size:10.5px;color:${conf};margin-top:2px;">신뢰도 ${Math.round(m.confidence*100)}% · ${m.hit_count}회 적용</div>
+      </div>`;
+    }).join('');
+  }
+
+  // 에이전트 페이지 진입 시 이력 로드
+  const _origOpenPage = openPage;
+  openPage = function(pageId) {
+    _origOpenPage(pageId);
+    if (pageId === 'agent') loadAgentHistory();
+  };
+
+  function clearAgentLog() {
+    document.getElementById('agentLog').innerHTML =
+      '<div class="log-line dim">에이전트를 실행하면 여기에 실시간 로그가 출력됩니다.</div>';
+    _setAgentDot('');
+    document.getElementById('agentStatusLabel').textContent = '';
+    document.getElementById('agentResultCard').classList.remove('visible');
+  }
+
+  // ══ 인물 관리 ══
+  let _contacts = [];
+
+  async function loadContacts() {
+    const res = await fetch('/api/contacts');
+    _contacts = await res.json();
+    renderContacts();
+  }
+
+  function renderContacts() {
+    const el = document.getElementById('contactsGroupList');
+    if (!_contacts.length) {
+      el.innerHTML = '<div class="task-empty">등록된 인물이 없습니다. + 추가 버튼으로 등록하세요.</div>';
+      return;
+    }
+    // 소속별 그룹핑
+    const groups = {};
+    _contacts.forEach(c => {
+      const org = c.organization || '기타';
+      if (!groups[org]) groups[org] = [];
+      groups[org].push(c);
+    });
+    el.innerHTML = Object.entries(groups).map(([org, list]) => `
+      <div class="contacts-group">
+        <div class="contacts-group-title">${org}</div>
+        <table class="contacts-table">
+          <thead><tr>
+            <th>이름 / 호칭</th>
+            <th>팀 / 직책</th>
+            <th>담당 업무</th>
+            <th>메모</th>
+          </tr></thead>
+          <tbody>
+            ${list.map(c => `
+            <tr onclick="openContactModal(${JSON.stringify(c).replace(/"/g,'&quot;')})">
+              <td>
+                <div class="contact-name">${c.name}</div>
+                ${c.nicknames ? `<div class="contact-nick">${c.nicknames}</div>` : ''}
+              </td>
+              <td>${[c.team, c.role].filter(Boolean).join(' · ') || '–'}</td>
+              <td style="font-size:12.5px;color:#555;">${c.responsibilities || '–'}</td>
+              <td>${c.note ? `<div class="contact-note">⚠ ${c.note}</div>` : '–'}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`).join('');
+  }
+
+  function openContactModal(data) {
+    const modal = document.getElementById('contactModal');
+    modal.style.display = 'flex';
+    if (data && typeof data === 'object') {
+      document.getElementById('contactModalTitle').textContent = '인물 수정';
+      document.getElementById('contactId').value = data.id || '';
+      document.getElementById('cName').value = data.name || '';
+      document.getElementById('cNicknames').value = data.nicknames || '';
+      document.getElementById('cOrg').value = data.organization || '';
+      document.getElementById('cTeam').value = data.team || '';
+      document.getElementById('cRole').value = data.role || '';
+      document.getElementById('cResp').value = data.responsibilities || '';
+      document.getElementById('cNote').value = data.note || '';
+      document.getElementById('contactDeleteBtn').style.display = 'inline-block';
+    } else {
+      document.getElementById('contactModalTitle').textContent = '인물 추가';
+      ['contactId','cName','cNicknames','cOrg','cTeam','cRole','cResp','cNote'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('contactDeleteBtn').style.display = 'none';
+    }
+  }
+
+  function closeContactModal() {
+    document.getElementById('contactModal').style.display = 'none';
+  }
+
+  async function saveContact() {
+    const data = {
+      id: document.getElementById('contactId').value || null,
+      name: document.getElementById('cName').value.trim(),
+      nicknames: document.getElementById('cNicknames').value.trim(),
+      organization: document.getElementById('cOrg').value.trim(),
+      team: document.getElementById('cTeam').value.trim(),
+      role: document.getElementById('cRole').value.trim(),
+      responsibilities: document.getElementById('cResp').value.trim(),
+      note: document.getElementById('cNote').value.trim(),
+    };
+    if (!data.name) { showToast('이름을 입력해주세요.'); return; }
+    await fetch('/api/contacts', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    closeContactModal();
+    await loadContacts();
+    showToast('✅ 저장됐습니다.');
+  }
+
+  async function deleteContact() {
+    const cid = document.getElementById('contactId').value;
+    if (!cid || !confirm('이 인물을 삭제할까요?')) return;
+    await fetch(`/api/contacts/${cid}`, { method: 'DELETE' });
+    closeContactModal();
+    await loadContacts();
+    showToast('🗑 삭제됐습니다.');
+  }
 
   async function loadAdminRules() {
     const res = await fetch('/api/admin/rules');
